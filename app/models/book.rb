@@ -4,7 +4,7 @@ class Book < ApplicationRecord
   validates :title, presence: true, uniqueness: true
   validates :author, presence: true
   validates :genre, inclusion: { in: [ "Unknown", "Fiction", "Mystery", "Fantasy", "Romance", "Thriller", "Horror", "Philosophy", "Educational", "Self-help" ] }
-  validates :description, presence: true, length: { minimum: 10 }
+  validates :description, presence: true, length: { minimum: 20 }
 
   before_save :format_title
   before_validation :default_genre
