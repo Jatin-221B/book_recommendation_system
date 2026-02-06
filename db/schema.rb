@@ -10,17 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_29_112609) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_093903) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "authors", force: :cascade do |t|
+    t.string "bio"
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "string"
+    t.string "text"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "books", force: :cascade do |t|
-    t.string "author"
+    t.bigint "author_id", null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.string "genre"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_books_on_author_id"
+  end
+
+  create_table "favourites", force: :cascade do |t|
+    t.bigint "book_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["book_id"], name: "index_favourites_on_book_id"
+    t.index ["user_id", "book_id"], name: "index_favourites_on_user_id_and_book_id", unique: true
+    t.index ["user_id"], name: "index_favourites_on_user_id"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -33,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_112609) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["book_id"], name: "index_reviews_on_book_id"
+    t.index ["user_id", "book_id"], name: "index_reviews_on_user_id_and_book_id", unique: true
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
@@ -43,6 +64,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_112609) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "books", "authors"
+  add_foreign_key "favourites", "books"
+  add_foreign_key "favourites", "users"
   add_foreign_key "reviews", "books"
   add_foreign_key "reviews", "users"
 end
