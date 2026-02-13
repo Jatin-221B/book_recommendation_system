@@ -1,2 +1,41 @@
-<h1>Books#show</h1>
-<p>Find me in app/views/books/show.html.erb</p>
+<h1><%= @book.title %></h1>
+
+<p><%= link_to '← Back to Books', books_path %></p>
+
+<div class="book-details">
+  <p><strong>Author:</strong> <%= link_to @book.author.name, author_path(@book.author) %></p>
+  <p><strong>Genre:</strong> <%= @book.genre %></p>
+  
+  <% if @average_rating %>
+    <p><strong>Average Rating:</strong> <%= @average_rating %>/5'★'</p>
+  <% end %>
+  
+  <div class="book-description">
+    <h3>Description</h3>
+    <p><%= @book.description %></p>
+  </div>
+</div>
+
+<hr>
+
+<div class="book-reviews">
+  <h2>Reviews (<%= @reviews.count %>)</h2>
+  
+  <% if @reviews.any? %>
+    <% @reviews.each do |review| %>
+      <div class="review">
+        <%# <h4><%= link_to review.user.name, user_path(review.user) %><%#</h4> %>
+        <p><strong>Rating:</strong> <%=  '★' * review.rating %> (<%= review.rating %>/5)</p>
+        <p><%= review.content %></p>
+        <% if review.created_at == review.updated_at %>
+            <p><small><i>Created at<%= review.created_at.strftime('%B %d, %Y at %I:%M %p') %><</i></small></p>
+        <% else %>
+            <p><small><i>Updated at<%= review.updated_at.strftime('%B %d, %Y at %I:%M %p') %></i></small></p>
+        <% end %>
+      </div>
+      <hr>
+    <% end %>
+  <% else %>
+    <p>No reviews yet. Be the first to review this book!</p>
+  <% end %>
+</div>

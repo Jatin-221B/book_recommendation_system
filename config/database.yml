@@ -14,8 +14,8 @@ test:
   <<: *default
   database: book_rec_system_test
 
-production:
-  <<: *default
-  database: book_rec_system_production
-  username: book_rec_system
-  password: <%= ENV["BOOK_REC_SYSTEM_DATABASE_PASSWORD"] %>
+# production:
+#   <<: *default
+#   database: book_rec_system_production
+#   username: book_rec_system
+#   password: <%= ENV["BOOK_REC_SYSTEM_DATABASE_PASSWORD"] %>

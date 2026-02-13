@@ -1,2 +1,19 @@
-<h1>Books#index</h1>
-<p>Find me in app/views/books/index.html.erb</p>
+<h1>All Books</h1>
+
+<p><%= link_to '← Back to Home', root_path %></p>
+
+<% if @books.any? %>
+  <div class="books-list">
+    <% @books.each do |book| %>
+      <div class="book-item">
+        <p><h2><%= link_to book.title, book_path(book) %></h2>by <%= link_to book.author.name, author_path(book.author) %></p>
+        <p><strong>Genre:</strong> <%= book.genre %></p>
+        <p><%= truncate(book.description, length: 50) %></p>
+        <p><small><%= pluralize(book.reviews.count, 'review') %></small></p>
+      </div>
+      <hr>
+    <% end %>
+  </div>
+<% else %>
+  <p>No books available yet.</p>
+<% end %>

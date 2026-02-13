@@ -1,0 +1,17 @@
+<h1>Authors</h1>
+
+<p><%= link_to '← Back to Home', root_path %></p>
+
+<% if @authors.any?%>
+    <div class="authors list">
+        <% @authors.each do |author|%>
+            <div class='author'>
+                <p><%= link_to author.name, author_path(author)%></p>
+                <p><small><i><%= truncate(author.bio, length: 50)%></i></small></p>
+                <p><small><%= pluralize(author.books.count, 'book')%></small></p>
+            </div>
+        <% end %>
+    </div>
+<% else %>
+    <p>No authors found</p>
+<% end %>

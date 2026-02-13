@@ -1,0 +1,31 @@
+<div class="welcome-page">
+  <h1>Welcome to Mini Goodreads</h1>
+  <p>Discover books, read reviews, and share your thoughts</p>
+</div>
+
+
+<div class="recent-books">
+  <h2>Recently Added Books</h2>
+  
+  <% if @recent_books.any? %>
+    <div class="books-grid">
+      <% @recent_books.each do |book| %>
+        <div class="book-card">
+          <h3><%= link_to book.title, book_path(book) %></h3>
+          <p>by <%= link_to book.author.name, author_path(book.author) %></p>
+          <p><small><%= book.genre %></small></p>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No books yet. Check back soon!</p>
+  <% end %>
+</div>
+
+<div class="navigation">
+  <h2>Explore</h2>
+  <ul>
+    <li><%= link_to 'Browse All Books', books_path %></li>
+    <li><%= link_to 'Browse Authors', authors_path %></li>
+  </ul>
+</div>
