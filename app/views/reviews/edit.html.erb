@@ -1,0 +1,35 @@
+<h1>Edit Review</h1>
+
+<p><%= link_to 'Back to Book', book_path(@review.book) %></p>
+
+<%= form_with model: @review, url: review_path(@review), method: :patch, local: true do |f| %>
+  
+  <%= f.hidden_field :book_id %>
+  <%= f.hidden_field :user_id %>
+  
+  <div class="field">
+    <%= f.label :rating, "Rating:" %>
+    <%= f.select :rating, options_for_select([[1,1], [2,2], [3,3], [4,4], [5,5]], @review.rating), { prompt: "Select rating" } %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :content, "Review:" %>
+    <%= f.text_area :content, rows: 5, placeholder: "Write your review here..." %>
+  </div>
+  
+  <% if @review.errors.any? %>
+    <div class="errors">
+      <h3><%= pluralize(@review.errors.count, "error") %> prevented this review from being saved:</h3>
+      <ul>
+        <% @review.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <div class="actions">
+    <%= f.submit "Update Review" %>
+  </div>
+  
+<% end %>

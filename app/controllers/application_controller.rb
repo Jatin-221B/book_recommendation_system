@@ -4,4 +4,9 @@ class ApplicationController < ActionController::Base
 
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
+  # remove after adding devise later
+  def current_user
+    @current_user ||= User.first
+  end
+  helper_method :current_user
 end

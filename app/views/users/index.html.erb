@@ -1,0 +1,22 @@
+<h1>Users</h1>
+
+<p><%= link_to 'Back to Home', root_path %></p>
+
+<% if @users.any? %>
+  <div class="users-list">
+    <% @users.each do |user| %>
+      <div class="user-item">
+        <h2><%= link_to user.name, user_path(user) %></h2>
+        <p>
+          <small>
+            <%= pluralize(user.reviews.count, 'review') %> | 
+            <%= pluralize(user.favourite_books.count, 'favourite') %>
+          </small>
+        </p>
+      </div>
+      <hr>
+    <% end %>
+  </div>
+<% else %>
+  <p>No users yet.</p>
+<% end %>

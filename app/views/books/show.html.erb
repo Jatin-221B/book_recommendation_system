@@ -1,13 +1,13 @@
 <h1><%= @book.title %></h1>
 
-<p><%= link_to '← Back to Books', books_path %></p>
+<p><%= link_to 'Back to Books', books_path %></p>
 
 <div class="book-details">
   <p><strong>Author:</strong> <%= link_to @book.author.name, author_path(@book.author) %></p>
   <p><strong>Genre:</strong> <%= @book.genre %></p>
   
   <% if @average_rating %>
-    <p><strong>Average Rating:</strong> <%= @average_rating %>/5'★'</p>
+    <p><strong>Average Rating:</strong> <%= @average_rating %>/5 ★</p>
   <% end %>
   
   <div class="book-description">
@@ -17,6 +17,43 @@
 </div>
 
 <hr>
+<div class="favourite-section">
+  <% if current_user %>
+    <% existing_favourite = current_user.favourites.find_by(book_id: @book.id) %>
+    
+    <% if existing_favourite %>
+      <!-- User has already favorited this book -->
+      <%= button_to "Remove from Favourites ", favourite_path(existing_favourite), method: :delete %>
+    <% else %>
+      <!-- User hasn't favorited this book yet -->
+      <%= button_to "Add to Favourites ", favourites_path, method: :post, params: { favourite: { book_id: @book.id } } %>
+    <% end %>
+  <% else %>
+    <p><em>Login to add this book to your favourites</em></p>
+  <% end %>
+</div>
+
+<hr>
+
+<div class = "new-review">
+  <h3> Write a Review </h3>
+    <%= form_with model: Review.new, url: reviews_path, local: true do |f|%>
+      <%= f.hidden_field :book_id, value: @book.id %>
+      <%= f.hidden_field :user_id, value: current_user.id %>
+      <div class="field">
+        <%= f.label :rating, "Rating:" %>
+        <%= f.select :rating, options_for_select([[1,1], [2,2], [3,3], [4,4], [5,5]]), { prompt: "Select rating" } %>
+      </div>
+      <div class="field">
+        <%= f.label :content, "Review:" %>
+        <%= f.text_area :content, rows: 5, placeholder: "Write your review here..." %>
+      </div>
+
+      <div class="actions">
+        <%= f.submit "Submit Review" %>
+      </div>
+    <% end %>
+</div>
 
 <div class="book-reviews">
   <h2>Reviews (<%= @reviews.count %>)</h2>
@@ -24,13 +61,13 @@
   <% if @reviews.any? %>
     <% @reviews.each do |review| %>
       <div class="review">
-        <%# <h4><%= link_to review.user.name, user_path(review.user) %><%#</h4> %>
+        
         <p><strong>Rating:</strong> <%=  '★' * review.rating %> (<%= review.rating %>/5)</p>
         <p><%= review.content %></p>
         <% if review.created_at == review.updated_at %>
-            <p><small><i>Created at<%= review.created_at.strftime('%B %d, %Y at %I:%M %p') %><</i></small></p>
+            <p><small><i>Created at <%= review.created_at.strftime('%B %d, %Y at %I:%M %p') %></i></small></p>
         <% else %>
-            <p><small><i>Updated at<%= review.updated_at.strftime('%B %d, %Y at %I:%M %p') %></i></small></p>
+            <p><small><i>Updated at <%= review.updated_at.strftime('%B %d, %Y at %I:%M %p') %></i></small></p>
         <% end %>
       </div>
       <hr>
