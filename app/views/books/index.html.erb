@@ -1,8 +1,8 @@
 <h1>All Books</h1>
 
-<p><%= link_to 'Back to Home', root_path %></p>
+<%# link_to 'Back to Home', root_path %>
 
-<% if @books.any? %>
+<% if !@books.nil? %>
   <div class="books-list">
     <% @books.each do |book| %>
       <div class="book-item">

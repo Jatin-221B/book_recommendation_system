@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   # get "users/index"
   # get "users/show"
   # get "authors/index"
@@ -12,5 +13,5 @@ Rails.application.routes.draw do
   resources :authors, only: [ :index, :show ]
   resources :users, only: [ :index, :show ]
   resources :reviews, only: [ :create, :edit, :update, :destroy ]
-  resources :favourite_books, only: [ :create, :destroy ]
+  resources :favourites, only: [ :create, :destroy ]
 end

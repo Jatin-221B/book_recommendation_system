@@ -1,6 +1,6 @@
 <h1>Edit Review</h1>
 
-<p><%= link_to 'Back to Book', book_path(@review.book) %></p>
+<%# link_to 'Back to Book', book_path(@review.book) %>
 
 <%= form_with model: @review, url: review_path(@review), method: :patch, local: true do |f| %>
   

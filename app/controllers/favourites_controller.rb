@@ -1,4 +1,5 @@
 class FavouritesController < ApplicationController
+  before_action
   def create
     @favourite = Favourite.new(favourite_params)
     @favourite.user = current_user

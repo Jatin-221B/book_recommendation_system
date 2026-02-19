@@ -1,7 +1,7 @@
 <h1><%= @user.name %></h1>
 <p>Email:<%= @user.email %></p>
 
-<p><%= link_to 'Back to Users', users_path %></p>
+<%# link_to 'Back to Users', users_path %>
 <hr>
 
 <div class = "user-reviews">
@@ -27,8 +27,8 @@
         <ul>
             <%@favourite_books.each do |book|%>
                 <li>
-                    <%= link_to n book.title, book_path(book)%>
-                    <i>by<b><%= link_to book.author, auhtor_path(book.author)%></b></i>
+                    <%= link_to  book.title, book_path(book)%>
+                    <i> by <b><%= link_to book.author.name, author_path(book.author)%></b></i>
                 </li>
             <%end%>
         </ul>

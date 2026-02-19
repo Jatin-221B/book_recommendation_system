@@ -4,8 +4,8 @@ class UsersController < ApplicationController
   end
 
   def show
-    @users = user.find(params[:id])
-    @reviews = User.reviews.includes(:book).order(created_at: :desc)
-    @favourite_books = User.favourite_books.includes(:author).order(:title)
+    @user = User.find(params[:id])
+    @reviews = @user.reviews.includes(:book).order(created_at: :desc)
+    @favourite_books = @user.favourited_books.includes(:author).order(:title)
   end
 end

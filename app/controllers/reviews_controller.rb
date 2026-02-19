@@ -1,17 +1,30 @@
 class ReviewsController < ApplicationController
-  before_action :set_review, only: %i[ edit update destroy ]
+  before_action :set_review, only: [ :edit, :update, :destroy ]
+  before_action :authenticate_user!
 
   def create
-    @review = Review.new(review_params)
+    @book = Book.find(params[:review][:book_id])
+    @review = @book.reviews.build(review_params)
     @review.user = current_user
+
     if @review.save
-      redirect_to book_path(@review.book), notice: "Review was successfully created."
+      redirect_to book_path(@book), notice: "Review was successfully created."
     else
-      redirect_to book_path(@review.book), alert: "Review was not created."
+      # Load data needed for book show page
+      @reviews = @book.reviews.includes(:user).order(created_at: :desc)
+      @average_rating = @reviews.average(:rating)&.round(1)
+
+      # Render book show page with errors
+      flash.now[:alert] = "Review was not created: #{@review.errors.full_messages.join(', ')}"
+      render "books/show", status: :unprocessable_entity
     end
   end
 
   def edit
+    # Check authorization
+    if @review.user != current_user
+      redirect_to book_path(@review.book), alert: "You can only edit your own review."
+    end
   end
 
   def update
@@ -32,8 +45,10 @@ class ReviewsController < ApplicationController
       redirect_to book_path(@review.book), alert: "You can only delete your own review."
       return
     end
+
+    book = @review.book
     @review.destroy
-    redirect_to book_path(@review.book), notice: "Review was successfully destroyed."
+    redirect_to book_path(book), notice: "Review was successfully deleted."
   end
 
   private
