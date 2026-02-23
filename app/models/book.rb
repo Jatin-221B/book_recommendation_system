@@ -7,7 +7,7 @@ class Book < ApplicationRecord
   belongs_to :author
 
   validates :title, presence: true, uniqueness: { scope: :author_id, message: "already exists for this author" }
-  validates :genre, presence: true, inclusion: { in: [ "Unknown", "Fiction", "Mystery", "Fantasy", "Romance", "Thriller", "Horror", "Philosophy", "Educational", "Self-help" ] }
+  validates :genre, presence: true, inclusion: { in: [ "Science Fiction", "Classic", "Adventure", "Unknown", "Fiction", "Mystery", "Fantasy", "Romance", "Thriller", "Horror", "Philosophy", "Educational", "Self-help" ] }
   validates :description, presence: true, length: { minimum: 20 }
 
   before_validation :format_title

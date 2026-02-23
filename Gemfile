@@ -68,3 +68,5 @@ end
 gem "pg", "~> 1.6"
 
 gem "devise", "~> 5.0"
+
+gem "shakapacker", "~> 9.5"
