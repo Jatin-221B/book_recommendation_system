@@ -10,12 +10,13 @@
         <p>
           <small>
             <%= pluralize(user.reviews.count, 'review') %> | 
-            <%= pluralize(user.favourite_books.count, 'favourite') %>
+            <%= pluralize(user.favourites.count, 'favourite') %>
           </small>
         </p>
       </div>
       <hr>
     <% end %>
+    <%=paginate @users%>
   </div>
 <% else %>
   <p>No users yet.</p>

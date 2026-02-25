@@ -1,13 +1,21 @@
-<h1><%=@author.name%></h1>
+<% if !@author.nil?%>
+    <h1><%=@author.name%></h1>
 
-<%# link_to 'Back to Authors', authors_path %>
-<div class = 'author'>
-    <h2>About Author</h2>
-    <div class = 'author-info'><%= @author.bio %></div>
+    <%# link_to 'Back to Authors', authors_path %>
+    <div class = 'author'>
+        <h2>About Author</h2>
+    
 
-    <h2>Books by <%= @author.name %></h2>
-        <% @books.each do |book| %>
-            <p><%= link_to book.title, book_path(book) %></p>
-            <p><%= truncate(book.description, length: 50) %></p>
-        <% end %>
-</div>
+            <div class = 'author-info'><%= @author.bio %></div>
+            
+            <h2>Books by <%= @author.name %></h2>
+                <% @books.each do |book| %>
+                    <p><%= link_to book.title, book_path(book) %></p>
+                    <p><%= truncate(book.description, length: 50) %></p>
+                <% end %>
+    </div>
+    <%=paginate @books%>
+<%else%>
+    <div class = 'error'>Author not found</div>
+<%end%>
+

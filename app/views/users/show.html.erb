@@ -1,40 +1,29 @@
-<h1><%= @user.name %></h1>
-<p>Email:<%= @user.email %></p>
+<%if !@user.nil?%>
+    <h1><%= @user.name %></h1>
+    <p>Email:<%= @user.email %></p>
 
-<%# link_to 'Back to Users', users_path %>
-<hr>
+    <%# link_to 'Back to Users', users_path %>
+    <hr>
+    
+    <div>
+        <%= link_to "Reviews", user_reviews_path(@user)%>
+    <div class="user_favourites"> 
+        <h2>Favourite Books (<%= @favourite_books.count%>)</h2>
 
-<div class = "user-reviews">
-    <h2>Reviews (<%= @reviews.count %>)</h2>
-    <% if @reviews.any?%>
-        <% @reviews.each do |review| %>
-            <div class="review-item">
-                <h3><%= link_to review.book.title, book_path(review.book) %></h3>
-                <p><strong>Rating</strong><%= '★' * review.rating%> (<%= review.rating%>/5)</p>
-                <p><%= review.content%></p>
-                <p><small><i> Reviewed on <%= review.created_at.strftime('%B %d, %Y')%></i></small></p>
-            </div>
-            <hr>
+        <% if @favourite_books.any?%>
+            <ul>
+                <%@favourite_books.each do |book|%>
+                    <li>
+                        <%= link_to  book.title, book_path(book)%>
+                        <i> by <b><%= link_to book.author.name, author_path(book.author)%></b></i>
+                    </li>
+                <%end%>
+            </ul>
+        <%else%>
+            <p><i>No favourite Books yet</i></p>
         <%end%>
-    <%else%>
-        <p>No reviews yet</p>
-    <%end%>
-</div>
-<div class="user_favourites"> 
-    <h2>Favourite Books (<%= @favourite_books.count%>)</h2>
-
-    <% if @favourite_books.any?%>
-        <ul>
-            <%@favourite_books.each do |book|%>
-                <li>
-                    <%= link_to  book.title, book_path(book)%>
-                    <i> by <b><%= link_to book.author.name, author_path(book.author)%></b></i>
-                </li>
-            <%end%>
-        </ul>
-    <%else%>
-        <p><i>No favourite Books yet</i></p>
-    <%end%>
-</div>
-
+    </div>
+<%else%>
+    <h1>User not found</h1>
+<%end%>
 

@@ -1,10 +1,12 @@
 class AuthorsController < ApplicationController
   def index
-    @authors = Author.all.order(:name)
+    @authors = Author.includes(:books).order(:name).page(params[:page]).per(7)
   end
 
   def show
-    @author = Author.find(params[:id])
-    @books = @author.books.order(:title)
+    @author = Author.find_by(id: params[:id])
+    if !@author.nil?
+      @books = @author.books.order(:title).page(params[:page]).per(7)
+    end
   end
 end

@@ -9,9 +9,13 @@ Rails.application.routes.draw do
   # get "books/show"
   # get "up" => "rails/health#show", as: :rails_health_check
   root "pages#home"
-  resources :books, only: [ :index, :show ]
+  resources :books, only: [ :index, :show ] do
+    resources :reviews, only: [ :index, :create ]
+  end
   resources :authors, only: [ :index, :show ]
-  resources :users, only: [ :index, :show ]
-  resources :reviews, only: [ :create, :edit, :update, :destroy ]
+  resources :users, only: [ :index, :show ] do
+    resources :reviews, only: [ :index ]
+  end
+  resources :reviews, only: [  :edit, :update, :destroy ]
   resources :favourites, only: [ :create, :destroy ]
 end

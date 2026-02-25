@@ -1,11 +1,32 @@
 class ReviewsController < ApplicationController
   before_action :set_review, only: [ :edit, :update, :destroy ]
-  before_action :authenticate_user!
+  before_action :authenticate_user!, only: [ :create, :edit, :update, :destroy ]
+
+  def index
+    if params[:book_id]
+      @book = Book.find_by(id: params[:book_id])
+      if !@book.nil?
+        @reviews = @book.reviews.includes(:user).order(created_at: :desc)
+        if @reviews.any?
+          @average_rating = @reviews.average(:rating).round(1)
+        end
+        @reviews = @reviews.page(params[:page]).per(5)
+      end
+    end
+
+    if params[:user_id]
+      @user = User.find_by(id: params[:user_id])
+    if !@user.nil?
+      @reviews = @user.reviews.includes(:book).order(created_at: :desc).page(params[:page]).per(5)
+    end
+    end
+  end
 
   def create
-    @book = Book.find(params[:review][:book_id])
+    @book = Book.find(params[:book_id])
     @review = @book.reviews.build(review_params)
     @review.user = current_user
+
 
     if @review.save
       redirect_to book_path(@book), notice: "Review was successfully created."
@@ -19,6 +40,8 @@ class ReviewsController < ApplicationController
       render "books/show", status: :unprocessable_entity
     end
   end
+
+
 
   def edit
     # Check authorization

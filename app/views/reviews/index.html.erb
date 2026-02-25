@@ -1,0 +1,39 @@
+<%if params[:book_id]%>
+    <% if !@book.nil? %>
+        <h1><%= @book.title %></h1>
+        <h2>Reviews (<%= @reviews.count %>)</h2>
+        <% if @reviews.any? %>
+            <% @reviews.each do |review| %>
+                <div class="review-item">
+                    <h3><%= link_to review.user.name, user_path(review.user) %></h3>
+                    <p><strong>Rating</strong><%= '★' * review.rating%> (<%= review.rating%>/5)</p>
+                    <p><%= review.content%></p>
+                    <p><small><i> Reviewed on <%= review.created_at.strftime('%B %d, %Y')%></i></small></p>
+                </div>
+                <hr>
+            <% end %>
+            <%=paginate @reviews%>
+        <% else %>
+            <p>No reviews yet</p>
+        <% end %>
+    <% end %>
+<% elsif params[:user_id]%>
+    <% if !@user.nil? %>
+        <h1><%= @user.name %></h1>
+        <h2>Reviews (<%= @reviews.count %>)</h2>
+        <% if @reviews.any? %>
+            <% @reviews.each do |review| %>
+                <div class="review-item">
+                    <h3><%= link_to review.book.title, book_path(review.book) %></h3>
+                    <p><strong>Rating</strong><%= '★' * review.rating%> (<%= review.rating%>/5)</p>
+                    <p><%= review.content%></p>
+                    <p><small><i> Reviewed on <%= review.created_at.strftime('%B %d, %Y')%></i></small></p>
+                </div>
+                <hr>
+            <% end %>
+            <%=paginate @reviews%>
+        <% else %>
+            <p>No reviews yet</p>
+        <% end %>
+    <% end %>
+<%end%>
