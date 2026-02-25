@@ -1,39 +1,135 @@
-<%if params[:book_id]%>
-    <% if !@book.nil? %>
-        <h1><%= @book.title %></h1>
-        <h2>Reviews (<%= @reviews.count %>)</h2>
-        <% if @reviews.any? %>
-            <% @reviews.each do |review| %>
-                <div class="review-item">
-                    <h3><%= link_to review.user.name, user_path(review.user) %></h3>
-                    <p><strong>Rating</strong><%= '★' * review.rating%> (<%= review.rating%>/5)</p>
-                    <p><%= review.content%></p>
-                    <p><small><i> Reviewed on <%= review.created_at.strftime('%B %d, %Y')%></i></small></p>
-                </div>
-                <hr>
-            <% end %>
-            <%=paginate @reviews%>
-        <% else %>
-            <p>No reviews yet</p>
-        <% end %>
+<div class="container py-5">
+
+<% if params[:book_id] %>
+
+  <% if @book.present? %>
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="fw-bold mb-1"><%= @book.title %></h1>
+        <p class="text-muted mb-0">
+          Reviews (<%= @reviews.count %>)
+        </p>
+      </div>
+
+      <%= link_to "Back to Book",
+                  book_path(@book),
+                  class: "btn btn-outline-secondary btn-sm" %>
+    </div>
+
+    <% if @reviews.any? %>
+
+      <% @reviews.each do |review| %>
+
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <%= link_to review.user.name,
+                            user_path(review.user),
+                            class: "text-decoration-none" %>
+              </h5>
+
+              <span class="text-warning">
+                <%= '★' * review.rating %>
+              </span>
+            </div>
+
+            <p class="mt-2 text-muted">
+              <%= review.content %>
+            </p>
+
+            <p class="small text-muted mb-0">
+              Reviewed on <%= review.created_at.strftime('%B %d, %Y') %>
+            </p>
+
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="d-flex justify-content-center mt-4">
+        <%= paginate @reviews %>
+      </div>
+
+    <% else %>
+
+      <div class="alert alert-info">
+        No reviews yet.
+      </div>
+
     <% end %>
-<% elsif params[:user_id]%>
-    <% if !@user.nil? %>
-        <h1><%= @user.name %></h1>
-        <h2>Reviews (<%= @reviews.count %>)</h2>
-        <% if @reviews.any? %>
-            <% @reviews.each do |review| %>
-                <div class="review-item">
-                    <h3><%= link_to review.book.title, book_path(review.book) %></h3>
-                    <p><strong>Rating</strong><%= '★' * review.rating%> (<%= review.rating%>/5)</p>
-                    <p><%= review.content%></p>
-                    <p><small><i> Reviewed on <%= review.created_at.strftime('%B %d, %Y')%></i></small></p>
-                </div>
-                <hr>
-            <% end %>
-            <%=paginate @reviews%>
-        <% else %>
-            <p>No reviews yet</p>
-        <% end %>
+
+  <% end %>
+
+
+
+<% elsif params[:user_id] %>
+
+  <% if @user.present? %>
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="fw-bold mb-1"><%= @user.name %></h1>
+        <p class="text-muted mb-0">
+          Reviews (<%= @reviews.count %>)
+        </p>
+      </div>
+
+      <%= link_to "Back to Profile",
+                  user_path(@user),
+                  class: "btn btn-outline-secondary btn-sm" %>
+    </div>
+
+    <% if @reviews.any? %>
+
+      <% @reviews.each do |review| %>
+
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <%= link_to review.book.title,
+                            book_path(review.book),
+                            class: "text-decoration-none" %>
+              </h5>
+
+              <span class="text-warning">
+                <%= '★' * review.rating %>
+              </span>
+            </div>
+
+            <p class="mt-2 text-muted">
+              <%= review.content %>
+            </p>
+
+            <p class="small text-muted mb-0">
+              Reviewed on <%= review.created_at.strftime('%B %d, %Y') %>
+            </p>
+
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="d-flex justify-content-center mt-4">
+        <%= paginate @reviews %>
+      </div>
+
+    <% else %>
+
+      <div class="alert alert-info">
+        No reviews yet.
+      </div>
+
     <% end %>
-<%end%>
+
+  <% end %>
+
+<% end %>
+
+</div>

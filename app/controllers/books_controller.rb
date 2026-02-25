@@ -1,6 +1,6 @@
 class BooksController < ApplicationController
   def index
-    @books = Book.includes(:author).page(params[:page]).per(7)
+    @books = Book.includes(:author).page(params[:page]).per(9)
   end
 
   def show
