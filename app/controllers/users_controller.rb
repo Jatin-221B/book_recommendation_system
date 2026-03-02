@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  # before_action :authenticate_user!
+  before_action :authenticate_user!
+  before_action :require_admin!, only: [ :index ]
   def index
     @users = User.includes(:reviews, :favourites).order(:name).page(params[:page]).per(5)
   end

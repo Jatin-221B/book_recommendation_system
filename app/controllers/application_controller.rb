@@ -14,6 +14,15 @@ class ApplicationController < ActionController::Base
 
   layout :layout_by_resource
 
+  helper_method :admin?
+
+  def admin?
+    current_user&.admin?
+  end
+
+  def require_admin!
+    redirect_to root_path, alert: "Access denied." unless admin?
+  end
 private
 
 def layout_by_resource
