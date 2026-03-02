@@ -64,14 +64,15 @@ class ReviewsController < ApplicationController
   end
 
   def destroy
-    if @review.user != current_user
-      redirect_to book_path(@review.book), alert: "You can only delete your own review."
-      return
-    end
+    if @review.user == current_user  ||current_user.admin?
+      book = @review.book
+      @review.destroy
+      redirect_to book_path(book), notice: "Review was successfully deleted."
 
-    book = @review.book
-    @review.destroy
-    redirect_to book_path(book), notice: "Review was successfully deleted."
+    else
+
+      redirect_to book_path(@review.book), alert: "You can only delete your own review."
+    end
   end
 
   private
