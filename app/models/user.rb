@@ -12,8 +12,16 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   before_save :format_email
+  enum :role, { user: 0, admin: 1 }
+  after_initialize :set_default_role, if: :new_record?
+
+
 
   private
+
+  def set_default_role
+    self.role ||= :user
+  end
 
   def format_email
     self.email = email.downcase.strip if email.present?

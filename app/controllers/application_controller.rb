@@ -12,6 +12,27 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  layout :layout_by_resource
+
+  helper_method :admin?
+
+  def admin?
+    current_user&.admin?
+  end
+
+  def require_admin!
+    redirect_to root_path, alert: "Access denied." unless admin?
+  end
+private
+
+def layout_by_resource
+  if devise_controller?
+    "devise"
+  else
+    "application"
+  end
+end
+
   protected
     def configure_permitted_parameters
       devise_parameter_sanitizer.permit(:sign_up, keys: [ :name ])

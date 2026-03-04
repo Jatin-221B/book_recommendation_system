@@ -10,16 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_19_055443) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_02_101436) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "authors", force: :cascade do |t|
-    t.string "bio"
+    t.text "bio"
     t.datetime "created_at", null: false
     t.string "name"
-    t.string "string"
-    t.string "text"
     t.datetime "updated_at", null: false
   end
 
@@ -45,10 +43,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_19_055443) do
 
   create_table "reviews", force: :cascade do |t|
     t.bigint "book_id", null: false
-    t.string "content"
+    t.text "content"
     t.datetime "created_at", null: false
     t.integer "rating"
-    t.string "text"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["book_id"], name: "index_reviews_on_book_id"
@@ -64,6 +61,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_19_055443) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.integer "role", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
