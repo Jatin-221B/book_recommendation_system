@@ -164,7 +164,7 @@
         </p>
 
         <p class="small text-muted">
-          <%= review.updated_at.strftime('%B %d, %Y at %I:%M %p') %>
+          <%= review.updated_at.strftime('%B %d, %Y ')%> <!--can add at %I:%M %p-->
         </p>
 
         <% if current_user && review.user == current_user || current_user.admin?%>

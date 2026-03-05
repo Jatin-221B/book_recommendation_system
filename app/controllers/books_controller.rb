@@ -18,7 +18,7 @@ class BooksController < ApplicationController
       # @reviews << @current_user_review if @current_user_review
       # @reviews += @other_reviews
 
-      @reviews = @book.reviews.order(created_at: :desc).page(params[:page]).per(5)
+      @reviews = @book.reviews.order(created_at: :desc)
       if !@reviews.empty?
         @average_rating = @reviews.average(:rating).round(1)
       end
