@@ -1,4 +1,4 @@
-<div class="container py-5">
+<div class="container-fluid py-5">
 
   <% if @author.present? %>
 
@@ -13,7 +13,7 @@
         </div>
 
         <%= link_to "Back to Authors",
-                    authors_path,
+                    authors_path(page: params[:page]),
                     class: "btn btn-outline-light mt-3 mt-md-0" %>
       </div>
     </div>

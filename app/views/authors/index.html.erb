@@ -1,4 +1,4 @@
-<div class="container py-4">
+<div class="container-fluid py-4">
 
   <!-- Page Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
@@ -32,7 +32,7 @@
                 </span>
 
                 <%= link_to "View Profile",
-                            author_path(author),
+                            author_path(author, page: params[:page]),
                             class: "btn btn-outline-primary btn-sm" %>
               </div>
 

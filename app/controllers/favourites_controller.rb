@@ -17,7 +17,7 @@ class FavouritesController < ApplicationController
     #   return
     # end
     @favourite.destroy
-    redirect_to book_path(@favourite.book), notice: "Favourite was successfully destroyed."
+    redirect_to book_path(@favourite.book), notice: "Favourite was removed."
   end
 
   def favourite_params

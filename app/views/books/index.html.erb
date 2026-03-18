@@ -1,4 +1,4 @@
-<div class="container py-5">
+<div class="container-fluid py-5">
 
   <!-- Page Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
@@ -50,7 +50,7 @@
 
               <!-- View Button -->
               <%= link_to "View Details",
-                          book_path(book),
+                          book_path(book , page: params[:page]),
                           class: "btn btn-outline-primary btn-sm w-100" %>
 
             </div>
