@@ -1,7 +1,6 @@
 <div class="container-fluid py-5">
 
 <% if params[:book_id] %>
-
   <% if @book.present? %>
 
     <!-- HEADER -->
@@ -30,6 +29,9 @@
                 <%= link_to review.user.name,
                             user_path(review.user),
                             class: "text-decoration-none" %>
+                <% if review.user.admin? %>
+                  <span class="badge bg-danger">ADMIN</span>
+                <% end %>
               </h5>
 
               <span class="text-warning">
@@ -44,12 +46,18 @@
             <p class="small text-muted mb-0">
               Reviewed on <%= review.created_at.strftime('%B %d, %Y') %>
             </p>
-          <% if current_user && review.user == current_user || current_user.admin?%>
-            <%= link_to "Delete Review",
-                        review_path(review),
-                        method: :delete,
-                        class: "btn btn-outline-danger btn-sm" %>
-          <%end%>
+
+            <% if policy(review).destroy? %>
+              <div class="mt-2">
+                <%= button_to "Delete",
+                            review_path(review),
+                            method: :delete,
+                            data: { turbo_confirm: "Are you sure you want to delete this review?" },
+                            class: "btn btn-outline-danger btn-sm",
+                            form_class: "d-inline" %>
+              </div>
+            <% end %>
+
           </div>
         </div>
 
@@ -68,8 +76,6 @@
     <% end %>
 
   <% end %>
-
-
 
 <% elsif params[:user_id] %>
 
@@ -115,12 +121,18 @@
             <p class="small text-muted mb-0">
               Reviewed on <%= review.created_at.strftime('%B %d, %Y') %>
             </p>
-            <% if current_user && review.user == current_user || current_user.admin?%>
-            <%= link_to "Delete",
-                        review_path(review),
-                        method: :delete,
-                        class: "btn btn-outline-danger btn-sm" %>
-            <%end%>
+
+            <% if policy(review).destroy? %>
+              <div class="mt-2">
+                <%= button_to "Delete",
+                            review_path(review),
+                            method: :delete,
+                            data: { turbo_confirm: "Are you sure you want to delete this review?" },
+                            class: "btn btn-outline-danger btn-sm",
+                            form_class: "d-inline" %>
+              </div>
+            <% end %>
+
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 class ReviewsController < ApplicationController
   before_action :set_review, only: [ :edit, :update, :destroy ]
   before_action :authenticate_user!, only: [ :create, :edit, :update, :destroy ]
-
+  before_action :authorize_user, only: [ :create, :edit, :update, :destroy ]
   def index
     if params[:book_id]
       @book = Book.find_by(id: params[:book_id])
@@ -15,10 +15,13 @@ class ReviewsController < ApplicationController
     end
 
     if params[:user_id]
+
       @user = User.find_by(id: params[:user_id])
-    if !@user.nil?
-      @reviews = @user.reviews.includes(:book).order(created_at: :desc).page(params[:page]).per(5)
-    end
+      if !@user.nil?
+        # Authorize viewing this user's reviews
+        authorize @user, :index?, policy_class: ReviewPolicy
+        @reviews = @user.reviews.includes(:book).order(created_at: :desc).page(params[:page]).per(5)
+      end
     end
   end
 
@@ -83,5 +86,11 @@ class ReviewsController < ApplicationController
 
   def review_params
     params.require(:review).permit(:content, :rating, :book_id)
+  end
+
+  def authorize_user
+    # Pundit authorization
+
+    authorize @review
   end
 end

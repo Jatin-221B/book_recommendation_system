@@ -1,15 +1,26 @@
 Rails.application.routes.draw do
+  # Devise authentication
   devise_for :users
-  # get "up" => "rails/health#show", as: :rails_health_check
+
+  # Homepage
   root "pages#home"
+
+  # Books with nested reviews
   resources :books, only: [ :index, :show ] do
     resources :reviews, only: [ :index, :create ]
   end
+
+  # Authors
   resources :authors, only: [ :index, :show ]
-  resources :users, only: [ :index, :show ] do
+
+  # Users with nested reviews index
+  resources :users, only: [ :index, :show, :edit, :update, :destroy ] do
     resources :reviews, only: [ :index ]
   end
-  resources :users, only: [ :update, :edit, :destroy ]
-  resources :reviews, only: [  :edit, :update, :destroy ]
+
+  # Standalone review routes (for edit/update/delete)
+  resources :reviews, only: [ :edit, :update, :destroy ]
+
+  # Favourites
   resources :favourites, only: [ :create, :destroy ]
 end
