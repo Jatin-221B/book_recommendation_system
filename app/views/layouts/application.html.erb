@@ -21,65 +21,84 @@
   <body class="bg-light d-flex flex-column min-vh-100">
 
   <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container-fluid">
-      <%= link_to "BookNest", root_path, class: "navbar-brand fw-bold" %>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid">
+    <%= link_to " BookNest", root_path, class: "navbar-brand fw-bold" %>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarContent">
+    <div class="collapse navbar-collapse" id="navbarContent">
 
-        <!-- Left Links -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <%= link_to "Books", books_path, class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Authors", authors_path, class: "nav-link" %>
-          </li>
-          <%if current_user&.admin?%>
+      <!-- Left Links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <%= link_to "Books", books_path, class: "nav-link" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Authors", authors_path, class: "nav-link" %>
+        </li>
+        <% if current_user&.admin? %>
           <li class="nav-item">
             <%= link_to "Users", users_path, class: "nav-link" %>
           </li>
-          <%end%>
+        <% end %>
+      </ul>
 
-        </ul>
+      <!-- Search Bar (Right, before user section) -->
+      <%= form_with url: search_books_path, method: :get, local: true, class: "d-flex me-3", style: "max-width: 400px;" do |f| %>
+        <div class="input-group input-group-sm">
+          <%= f.text_field :q, 
+                          value: params[:q],
+                          placeholder: "Search books or authors...",
+                          class: "form-control",
+                          style: "background-color: #2b3035; color: white; border-color: #495057;" %>
+          <button class="btn btn-outline-light" type="submit" style="border-color: #495057;">
+            🔍
+          </button>
+        </div>
+      <% end %>
 
-        <!-- Right User Section -->
-        <ul class="navbar-nav">
-          <% if user_signed_in? %>
-            <li class="nav-item">
-              <span class="navbar-text me-3 text-white">
-                Hello, <%= current_user.name %>
-              </span>
-            </li>
+      <!-- Right User Section -->
+      <ul class="navbar-nav">
+        <% if user_signed_in? %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <%= current_user.name %>
+              <% if current_user.admin? %>
+                <span class="badge bg-danger ms-1">ADMIN</span>
+              <% end %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <%= link_to "My Profile", user_path(current_user), class: "dropdown-item" %>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <%= button_to "Sign Out", 
+                              destroy_user_session_path,
+                              method: :delete,
+                              class: "dropdown-item text-danger",
+                              form: { style: "display: inline;" },
+                              data: { turbo: false } %>
+              </li>
+            </ul>
+          </li>
 
-            <li class="nav-item">
-              <%= link_to "My Profile", user_path(current_user), class: "btn btn-outline-light btn-sm me-2" %>
-            </li>
+        <% else %>
+          <li class="nav-item me-2">
+            <%= link_to "Sign In", new_user_session_path, class: "btn btn-outline-light btn-sm" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-success btn-sm" %>
+          </li>
+        <% end %>
+      </ul>
 
-            <li class="nav-item">
-              <%= button_to "Sign Out", destroy_user_session_path,
-                    method: :delete,
-                    class: "btn btn-danger btn-sm",
-                    form_class: "d-inline" %>
-            </li>
-
-          <% else %>
-            <li class="nav-item me-2">
-              <%= link_to "Sign In", new_user_session_path, class: "btn btn-outline-light btn-sm" %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-success btn-sm" %>
-            </li>
-          <% end %>
-        </ul>
-
-      </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
 
   <!-- FLASH MESSAGES -->
@@ -93,7 +112,7 @@
   </div>
 
 
-  <!--MAIN CONTENT -->
+  <!-- MAIN CONTENT -->
   <main class="container-fluid px-0 py-4">
     <div class="card shadow-sm p-4">
       <%= yield %>

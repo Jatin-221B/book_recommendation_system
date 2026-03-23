@@ -1,6 +1,6 @@
 class BooksController < ApplicationController
   def index
-    @books = Book.includes(:author).page(params[:page]).per(9)
+    @books = Book.includes(:author).page(params[:page]).per(12)
   end
 
   def show
@@ -24,5 +24,22 @@ class BooksController < ApplicationController
       end
     end
     @review = Review.new
+  end
+
+  def search
+    @query = params[:q]
+
+    if @query.present?
+      @books = Book.includes(:author)
+                   .where("LOWER(books.title) LIKE ? OR LOWER(authors.name) LIKE ?",
+                          "%#{@query.downcase}%",
+                          "%#{@query.downcase}%")
+                   .references(:authors)
+                   .order(title: :asc)
+                   .page(params[:page])
+                   .per(24)
+    else
+      @books = Book.none.page(params[:page])
+    end
   end
 end

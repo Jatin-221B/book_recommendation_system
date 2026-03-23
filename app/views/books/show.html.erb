@@ -2,48 +2,61 @@
 
 <% if @book.present? %>
 
-  <!-- book title -->
+  <!-- Book title and cover -->
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
 
-      <div class="d-flex justify-content-between flex-wrap">
-        <div>
-          <h1 class="fw-bold mb-2"><%= @book.title %></h1>
-
-          <p class="text-muted mb-2">
-            by <%= link_to @book.author.name,
-                           author_path(@book.author),
-                           class: "text-decoration-none" %>
-          </p>
-
-          <span class="badge bg-secondary mb-2">
-            <%= @book.genre %>
-          </span>
-
-          <% if @average_rating %>
-            <p class="mt-2 mb-0">
-              <strong>Average Rating:</strong>
-              <span class="text-warning">
-                <%= '★' * @average_rating.round %>
-              </span>
-              (<%= @average_rating %>/5)
-            </p>
-          <% end %>
+      <div class="row">
+        <!-- Left: Cover Image -->
+        <div class="col-md-3 mb-3 mb-md-0">
+          <%= image_tag @book.cover_url, 
+                       alt: @book.title,
+                       class: "img-fluid rounded shadow",
+                       style: "max-width: 100%; height: auto;" %>
         </div>
 
-        <div class="mt-3 mt-md-0">
-          <%= link_to "Back to Books",
-                      books_path(page: params[:page]),
-                      class: "btn btn-outline-secondary btn-sm" %>
+        <!-- Right: Book Info -->
+        <div class="col-md-9">
+          <div class="d-flex justify-content-between flex-wrap">
+            <div>
+              <h1 class="fw-bold mb-2"><%= @book.title %></h1>
+
+              <p class="text-muted mb-2">
+                by <%= link_to @book.author.name,
+                               author_path(@book.author),
+                               class: "text-decoration-none" %>
+              </p>
+
+              <span class="badge bg-secondary mb-2">
+                <%= @book.genre %>
+              </span>
+
+              <% if @average_rating %>
+                <p class="mt-2 mb-0">
+                  <strong>Average Rating:</strong>
+                  <span class="text-warning">
+                    <%= '★' * @average_rating.round %>
+                  </span>
+                  (<%= @average_rating %>/5)
+                </p>
+              <% end %>
+            </div>
+
+            <div class="mt-3 mt-md-0">
+              <%= link_to "Back to Books",
+                          books_path(page: params[:page]),
+                          class: "btn btn-outline-secondary btn-sm" %>
+            </div>
+          </div>
+
+          <hr>
+
+          <h5 class="fw-bold">Description</h5>
+          <p class="text-muted mb-0">
+            <%= @book.description %>
+          </p>
         </div>
       </div>
-
-      <hr>
-
-      <h5 class="fw-bold">Description</h5>
-      <p class="text-muted mb-0">
-        <%= @book.description %>
-      </p>
 
     </div>
   </div>
@@ -133,125 +146,123 @@
 
 
   <!-- reviews section -->
-<h3 class="fw-bold mb-4">
-  Reviews (<%= @reviews.count %>)
-</h3>
+  <h3 class="fw-bold mb-4">
+    Reviews (<%= @reviews.count %>)
+  </h3>
 
-<% if @reviews.any? %>
+  <% if @reviews.any? %>
 
-  <% @vis_reviews = @reviews.order(updated_at: :desc).first(2) %>
+    <% @vis_reviews = @reviews.order(updated_at: :desc).first(2) %>
 
-  <% @vis_reviews.each do |review| %>
+    <% @vis_reviews.each do |review| %>
 
-    <div class="card shadow-sm border-0 mb-4">
-      <div class="card-body">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
 
-        <!-- review display -->
-        <div class="d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">
-            <%= link_to review.user.name,
-                        user_path(review.user),
-                        class: "text-decoration-none" %>
-          </h5>
+          <!-- review display -->
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <%= link_to review.user.name,
+                          user_path(review.user),
+                          class: "text-decoration-none" %>
+            </h5>
 
-          <span class="text-warning">
-            <%= '★' * review.rating.to_i %>
-          </span>
-        </div>
-
-        <p class="mt-2 text-muted">
-          <%= review.content %>
-        </p>
-
-        <p class="small text-muted">
-          <%= review.updated_at.strftime('%B %d, %Y ')%> <!--can add at %I:%M %p-->
-        </p>
-
-        <% if current_user && review.user == current_user || current_user.admin?%>
-
-          <!-- action buttons -->
-          <div class="mt-3">
-            <%if current_user && review.user == current_user %>
-            <!-- edit -->
-            <button class="btn btn-outline-primary btn-sm me-2"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#editReview<%= review.id %>">
-              Edit
-            </button>
-            <%end%>
-          
-            <!-- delete button -->
-            <%= button_to "Delete",
-                          review_path(review),
-                          method: :delete,
-                          data: { confirm: "Are you sure?" },
-                          class: "btn btn-outline-danger btn-sm",
-                          form_class: "d-inline" %>
-            
-
+            <span class="text-warning">
+              <%= '★' * review.rating.to_i %>
+            </span>
           </div>
 
-          <!-- drop down edit form -->
-          <div class="collapse mt-3" id="editReview<%= review.id %>">
-            <div class="card card-body bg-light">
+          <p class="mt-2 text-muted">
+            <%= review.content %>
+          </p>
 
-              <%= form_with model: review,
-                            url: review_path(review),
-                            method: :patch,
-                            local: true do |f| %>
+          <p class="small text-muted">
+            <%= review.updated_at.strftime('%B %d, %Y ')%> <!--can add at %I:%M %p-->
+          </p>
 
-                <div class="mb-3">
-                  <%= f.label :rating, class: "form-label" %>
-                  <%= f.select :rating, 1..5, {}, class: "form-select" %>
-                </div>
+          <% if current_user && review.user == current_user || current_user&.admin? %>
 
-                <div class="mb-3">
-                  <%= f.label :content, class: "form-label" %>
-                  <%= f.text_area :content,
-                                  rows: 4,
-                                  class: "form-control" %>
-                </div>
-
-                <div class="d-flex gap-2">
-                  <%= f.submit "Update Review",
-                               class: "btn btn-primary btn-sm" %>
-
-                  <button type="button"
-                          class="btn btn-outline-secondary btn-sm"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#editReview<%= review.id %>">
-                    Cancel
-                  </button>
-                </div>
-
+            <!-- action buttons -->
+            <div class="mt-3">
+              <% if current_user && review.user == current_user %>
+                <!-- edit -->
+                <button class="btn btn-outline-primary btn-sm me-2"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#editReview<%= review.id %>">
+                  Edit
+                </button>
               <% end %>
-
+            
+              <!-- delete button -->
+              <%= button_to "Delete",
+                            review_path(review),
+                            method: :delete,
+                            data: { confirm: "Are you sure?" },
+                            class: "btn btn-outline-danger btn-sm",
+                            form_class: "d-inline" %>
             </div>
-          </div>
 
-        <% end %>
+            <!-- drop down edit form -->
+            <div class="collapse mt-3" id="editReview<%= review.id %>">
+              <div class="card card-body bg-light">
 
+                <%= form_with model: review,
+                              url: review_path(review),
+                              method: :patch,
+                              local: true do |f| %>
+
+                  <div class="mb-3">
+                    <%= f.label :rating, class: "form-label" %>
+                    <%= f.select :rating, 1..5, {}, class: "form-select" %>
+                  </div>
+
+                  <div class="mb-3">
+                    <%= f.label :content, class: "form-label" %>
+                    <%= f.text_area :content,
+                                    rows: 4,
+                                    class: "form-control" %>
+                  </div>
+
+                  <div class="d-flex gap-2">
+                    <%= f.submit "Update Review",
+                                 class: "btn btn-primary btn-sm" %>
+
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#editReview<%= review.id %>">
+                      Cancel
+                    </button>
+                  </div>
+
+                <% end %>
+
+              </div>
+            </div>
+
+          <% end %>
+
+        </div>
       </div>
+
+    <% end %>
+
+    <% if @reviews.count > 2 %>
+      <div class="text-center">
+        <%= link_to "See all reviews",
+                    book_reviews_path(@book),
+                    class: "btn btn-outline-secondary btn-sm" %>
+      </div>
+    <% end %>
+
+  <% else %>
+
+    <div class="alert alert-info">
+      No reviews yet. Be the first to review this book!
     </div>
 
   <% end %>
-
-  <% if @reviews.count > 2 %>
-    <div class="text-center">
-      <%= link_to "See all reviews",
-                  book_reviews_path(@book),
-                  class: "btn btn-outline-secondary btn-sm" %>
-    </div>
-  <% end %>
-
-<% else %>
-
-  <div class="alert alert-info">
-    No reviews yet. Be the first to review this book!
-  </div>
-
-<% end %>
 
 <% else %>
 

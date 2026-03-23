@@ -8,6 +8,10 @@ Rails.application.routes.draw do
   # Books with nested reviews
   resources :books, only: [ :index, :show ] do
     resources :reviews, only: [ :index, :create ]
+    # Add search route
+    collection do
+      get :search
+    end
   end
 
   # Authors

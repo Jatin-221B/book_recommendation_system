@@ -1,0 +1,138 @@
+<div class="container-fluid py-4">
+  
+  <!-- Search Form -->
+  <div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+      <h1 class="text-center mb-4">Search Books</h1>
+      
+      <%= form_with url: search_books_path, method: :get, local: true do |f| %>
+        <div class="input-group input-group-lg shadow-sm">
+          <%= f.text_field :q, 
+                          value: @query,
+                          placeholder: "Search by title or author...",
+                          class: "form-control",
+                          autofocus: true %>
+          <button class="btn btn-primary px-4" type="submit">
+            🔍 Search
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <% if @query.present? %>
+    <% if @books.any? %>
+      
+      <div class="mb-3">
+        <h5 class="text-muted">
+          Found <%= @books.total_count %> 
+          <%= 'result'.pluralize(@books.total_count) %> 
+          for "<%= @query %>"
+        </h5>
+      </div>
+
+      <!-- Books Grid (same as index) -->
+      <div class="row g-3">
+        <% @books.each do |book| %>
+          <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <%= link_to book_path(book), class: "text-decoration-none" do %>
+              <div class="book-card">
+                <div class="book-cover">
+                  <%= image_tag book.cover_url, 
+                               alt: book.title,
+                               class: "img-fluid",
+                               loading: "lazy" %>
+                </div>
+                
+                <div class="book-info">
+                  <h6 class="book-title"><%= truncate(book.title, length: 60) %></h6>
+                  <p class="book-author"><%= truncate(book.author.name, length: 40) %></p>
+                  <span class="badge bg-primary book-genre"><%= book.genre %></span>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <div class="row mt-4">
+        <div class="col text-center">
+          <%= paginate @books, params: { q: @query } %>
+        </div>
+      </div>
+
+    <% else %>
+      <!-- No Results -->
+      <div class="text-center py-5">
+        <div class="mb-3" style="font-size: 4rem;">📚</div>
+        <h3>No books found for "<%= @query %>"</h3>
+        <p class="text-muted">Try a different search term</p>
+        <%= link_to "Browse all books", books_path, class: "btn btn-primary mt-3" %>
+      </div>
+    <% end %>
+    
+  <% else %>
+    <!-- Empty State -->
+    <div class="text-center py-5">
+      <div class="mb-3" style="font-size: 5rem;">🔍</div>
+      <h3>Search our collection</h3>
+      <p class="text-muted">Find books by title or author</p>
+      
+      <div class="mt-4">
+        <p class="text-muted mb-2">Popular searches:</p>
+        <%= link_to "Fantasy", search_books_path(q: "fantasy"), class: "badge bg-secondary text-decoration-none fs-6 me-2" %>
+        <%= link_to "Science Fiction", search_books_path(q: "science fiction"), class: "badge bg-secondary text-decoration-none fs-6 me-2" %>
+        <%= link_to "Mystery", search_books_path(q: "mystery"), class: "badge bg-secondary text-decoration-none fs-6 me-2" %>
+      </div>
+    </div>
+  <% end %>
+
+</div>
+
+<style>
+/* Each column stretches to match its neighbours */
+.col-6, .col-sm-4, .col-md-3, .col-lg-2 {
+  display: flex;
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: transform 0.2s ease;
+}
+
+.book-cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background: #f0f0f0;
+  margin-bottom: 0.75rem;
+  aspect-ratio: 2 / 3;   /* bring this back for uniform cover heights */
+}
+
+.book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* fills the box */
+  object-position: center top; /* anchors to top edge */
+  display: block;
+}
+
+.book-info {
+  flex: 1;                   /* pushes info to fill remaining card space */
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.25rem;
+}
+
+.book-genre {
+  margin-top: auto;          /* pins badge to bottom of card */
+  align-self: flex-start;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+}
+</style>
