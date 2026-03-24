@@ -1,10 +1,101 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+/* ================= THEME VARIABLES ================= */
+
+/* LIGHT MODE */
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #111827;
+  --text-secondary: #6b7280;
+
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+
+  --accent: #ec4899;
+
+  --border: #e5e7eb;
+  --shadow: rgba(0,0,0,0.05);
+
+  --title-hover:  #2d5bbd;
+}
+
+/* DARK MODE */
+[data-theme="dark"] {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --text-main: #f1f5f9;
+  --text-secondary: #94a3b8;
+
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+
+  --accent: #f472b6;
+
+  --border: #334155;
+  --shadow: rgba(0,0,0,0.4);
+
+  --title-hover:  #a4a3f0;
+}
+
+/* ================= GLOBAL STYLES ================= */
+
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+/* Navbar */
+.navbar {
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Cards */
+.content-card,
+.explore-section,
+.explore-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Text */
+.section-heading {
+  color: var(--text-main);
+}
+
+.book-author-home {
+  color: var(--text-secondary);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--primary);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+/* Badge */
+.genre-badge {
+  background: var(--accent);
+}
+
+/* Dropdown */
+.dropdown-menu {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.dropdown-item {
+  color: var(--text-main);
+}
+
+.dropdown-item:hover {
+  background: var(--primary);
+  color: white;
+}
+
+
+

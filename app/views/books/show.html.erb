@@ -32,13 +32,15 @@
               </span>
 
               <% if @average_rating %>
-                <p class="mt-2 mb-0">
-                  <strong>Average Rating:</strong>
-                  <span class="text-warning">
-                    <%= '★' * @average_rating.round %>
-                  </span>
-                  (<%= @average_rating %>/5)
-                </p>
+                
+                  <div class="avg-rating">
+                    <strong>Average Rating:</strong>
+                    <span class="text-warning">
+                      <%= '★' * @average_rating.round %>
+                    </span>
+                    (<%= @average_rating %>/5)
+                  </div>
+               
               <% end %>
             </div>
 
@@ -90,65 +92,79 @@
 
 
   <!-- review form -->
-  <div class="card shadow-sm border-0 mb-5">
-    <div class="card-body">
 
-      <details>
-        <summary class="btn btn-primary mb-3">Write a Review</summary>
+      <div class="review-form-container mb-5">
+
+        <h5 class="fw-semibold mb-3">Ratings and Reviews</h4>
 
         <% if current_user %>
-          <%= form_with model: [@book, @review], local: true do |f| %>
+          <% if !current_user.reviews.exists?(book_id: @book.id)%>
+            <%= form_with model: [@book, @review], local: true do |f| %>
 
-            <%= f.hidden_field :book_id, value: @book.id %>
+              <%= f.hidden_field :book_id, value: @book.id %>
 
-            <div class="mb-3">
-              <%= f.label :rating, "Rating", class: "form-label" %>
-              <%= f.select :rating,
-                           options_for_select([[1,1],[2,2],[3,3],[4,4],[5,5]], @review&.rating),
-                           { prompt: "Select rating" },
-                           class: "form-select" %>
-            </div>
+              <!--  INLINE RATING + TEXT -->
+              <div class="d-flex align-items-start gap-3 flex-wrap">
 
-            <div class="mb-3">
-              <%= f.label :content, "Review", class: "form-label" %>
-              <%= f.text_area :content,
-                              rows: 5,
-                              class: "form-control",
-                              placeholder: "Write your review here..." %>
-            </div>
-
-            <% if @review&.errors&.any? %>
-              <div class="alert alert-danger">
-                <strong><%= pluralize(@review.errors.count, "error") %> prevented this review:</strong>
-                <ul class="mb-0">
-                  <% @review.errors.full_messages.each do |message| %>
-                    <li><%= message %></li>
+                <!-- STAR RATING -->
+                <div class="star-rating-input mt-1">
+                  <% (1..5).each do |i| %>
+                    <span class="star" data-value="<%= i %>">☆</span>
                   <% end %>
-                </ul>
+                </div>
+
+                <!-- TEXT AREA -->
+                <div class="flex-grow-1">
+                  <div class="review_text">
+                    <%= f.text_area :content,
+                                    rows: 3,
+                                    class: "form-control review-textarea",
+                                    placeholder: "Write your thoughts..." %>
+                  </div>
+                </div>
+
               </div>
+
+              <%= f.hidden_field :rating, id: "rating-input" %>
+
+              <% if @review&.errors&.any? %>
+                <div class="alert alert-danger mt-3">
+                  <ul class="mb-0">
+                    <% @review.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+
+              <!-- SUBMIT -->
+              <div class="mt-3">
+                <%= f.submit "Post Review",
+                            class: "btn btn-primary px-4" %>
+              </div>
+
             <% end %>
+          <%else%>
+            <div>
+              <h6>You have already Reviewed this book<h6>
+            </div>
+          <%end%>
 
-            <%= f.submit "Submit Review",
-                         class: "btn btn-success" %>
-
-          <% end %>
         <% else %>
           <div class="alert alert-info">
             Login to write a review.
           </div>
         <% end %>
 
-      </details>
-
-    </div>
-  </div>
+      </div>
+    
 
 
 
   <!-- reviews section -->
-  <h3 class="fw-bold mb-4">
+  <h5 class="fw-bold mb-4">
     Reviews (<%= @reviews.count %>)
-  </h3>
+  </h5>
 
   <% if @reviews.any? %>
 
@@ -156,94 +172,89 @@
 
     <% @vis_reviews.each do |review| %>
 
-      <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
+      <div class="review-item">
 
-          <!-- review display -->
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
+        <!-- Header -->
+        <div class="review-header d-flex justify-content-between">
+          <div>
+            <strong>
               <%= link_to review.user.name,
                           user_path(review.user),
-                          class: "text-decoration-none" %>
-            </h5>
+                          class: "review-user text-decoration-none" %>
+            </strong>
 
-            <span class="text-warning">
-              <%= '★' * review.rating.to_i %>
+            <span class="review-stars ms-2">
+              <%= '★' * review.rating.to_i %><%= '☆' * (5 - review.rating.to_i) %>
             </span>
           </div>
 
-          <p class="mt-2 text-muted">
-            <%= review.content %>
-          </p>
-
-          <p class="small text-muted">
-            <%= review.updated_at.strftime('%B %d, %Y ')%> <!--can add at %I:%M %p-->
-          </p>
-
-          <% if current_user && review.user == current_user || current_user&.admin? %>
-
-            <!-- action buttons -->
-            <div class="mt-3">
-              <% if current_user && review.user == current_user %>
-                <!-- edit -->
-                <button class="btn btn-outline-primary btn-sm me-2"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#editReview<%= review.id %>">
-                  Edit
-                </button>
-              <% end %>
-            
-              <!-- delete button -->
-              <%= button_to "Delete",
-                            review_path(review),
-                            method: :delete,
-                            data: { confirm: "Are you sure?" },
-                            class: "btn btn-outline-danger btn-sm",
-                            form_class: "d-inline" %>
-            </div>
-
-            <!-- drop down edit form -->
-            <div class="collapse mt-3" id="editReview<%= review.id %>">
-              <div class="card card-body bg-light">
-
-                <%= form_with model: review,
-                              url: review_path(review),
-                              method: :patch,
-                              local: true do |f| %>
-
-                  <div class="mb-3">
-                    <%= f.label :rating, class: "form-label" %>
-                    <%= f.select :rating, 1..5, {}, class: "form-select" %>
-                  </div>
-
-                  <div class="mb-3">
-                    <%= f.label :content, class: "form-label" %>
-                    <%= f.text_area :content,
-                                    rows: 4,
-                                    class: "form-control" %>
-                  </div>
-
-                  <div class="d-flex gap-2">
-                    <%= f.submit "Update Review",
-                                 class: "btn btn-primary btn-sm" %>
-
-                    <button type="button"
-                            class="btn btn-outline-secondary btn-sm"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#editReview<%= review.id %>">
-                      Cancel
-                    </button>
-                  </div>
-
-                <% end %>
-
-              </div>
-            </div>
-
-          <% end %>
-
+          <span class="review-date">
+            <%= review.updated_at.strftime('%b %d, %Y') %>
+          </span>
         </div>
+
+        <!-- Content -->
+        <p class="review-content mt-2">
+          <%= review.content %>
+        </p>
+
+        <!-- Actions -->
+        <% if current_user && (review.user == current_user || current_user&.admin?) %>
+          <div class="review-actions mt-2">
+
+            <% if review.user == current_user %>
+              <button class="btn btn-sm btn-link p-0 me-3"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#editReview<%= review.id %>">
+                Edit
+              </button>
+            <% end %>
+
+            <%= button_to "Delete",
+                          review_path(review),
+                          method: :delete,
+                          data: { confirm: "Are you sure?" },
+                          class: "btn btn-sm btn-link text-danger p-0",
+                          form_class: "d-inline" %>
+          </div>
+
+          <!-- Edit Form -->
+          <div class="collapse mt-3" id="editReview<%= review.id %>">
+            <div class="review-edit-box">
+
+              <%= form_with model: review,
+                            url: review_path(review),
+                            method: :patch,
+                            local: true do |f| %>
+
+                <div class="mb-2">
+                  <%= f.select :rating, 1..5, {}, class: "form-select form-select-sm" %>
+                </div>
+
+                <div class="mb-2">
+                  <%= f.text_area :content,
+                                  rows: 3,
+                                  class: "form-control form-control-sm" %>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <%= f.submit "Update", class: "btn btn-primary btn-sm" %>
+
+                  <button type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#editReview<%= review.id %>">
+                    Cancel
+                  </button>
+                </div>
+
+              <% end %>
+
+            </div>
+          </div>
+
+        <% end %>
+
       </div>
 
     <% end %>
@@ -273,3 +284,243 @@
 <% end %>
 
 </div>
+<style>
+
+
+
+.avg-rating {
+  color: var(--text-main) !important;
+}
+
+.avg-rating .text-warning {
+  color: #facc15 !important; 
+}
+  /* ===== CARD ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 6px 16px var(--shadow) !important;
+  border-radius: 12px;
+}
+
+/* ===== HEADINGS ===== */
+h1, h3, h5, h6{
+  color: var(--text-main);
+}
+
+/* ===== TEXT ===== */
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+/* ===== AUTHOR LINK ===== */
+.card a {
+  color: var(--primary);
+  transition: 0.2s;
+}
+
+.card a:hover {
+  color: var(--primary-hover);
+}
+
+/* ===== BADGE ===== */
+.badge {
+  background: var(--primary) !important;
+  color: white;
+  border-radius: 6px;
+}
+
+/* ===== RATING STARS ===== */
+.text-warning {
+  color: #facc15 !important; /* keep gold */
+}
+
+/* ===== DESCRIPTION ===== */
+.card p {
+  line-height: 1.6;
+}
+
+/* ===== BUTTONS ===== */
+.btn-outline-secondary {
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+.btn-outline-secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* ===== REVIEW CARDS ===== */
+.card-body {
+  padding: 1.25rem;
+}
+
+/* ===== REVIEW USER NAME ===== */
+.card h5 a {
+  font-weight: 600;
+}
+
+/* ===== REVIEW DATE ===== */
+.small.text-muted {
+  font-size: 0.75rem;
+}
+
+/* ===== FORM ===== */
+.form-control,
+.form-select {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+
+.form-control::placeholder {
+  color: var(--text-secondary);
+}
+
+/* ===== DARK MODE FIXES ===== */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background: var(--bg-card);
+}
+
+/* ===== DETAILS BUTTON ===== */
+summary.btn {
+  cursor: pointer;
+}
+
+/* ===== COVER IMAGE ===== */
+img.img-fluid {
+  border-radius: 10px;
+  box-shadow: 0 8px 18px var(--shadow);
+}
+
+/* ===== ACTION BUTTON SPACING ===== */
+button, .btn {
+  border-radius: 8px;
+}
+
+/* ===== COLLAPSE EDIT FORM ===== */
+.card.bg-light {
+  background: var(--bg-main) !important;
+  border: 1px solid var(--border);
+}
+
+/* ===== REVIEW CONTAINER ===== */
+.review-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== HEADER ===== */
+.review-header {
+  font-size: 0.9rem;
+}
+
+/* USER */
+.review-user {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.review-user:hover {
+  color: var(--primary);
+}
+
+/* STARS */
+.review-stars {
+  color: #facc15;
+  font-size: 0.9rem;
+}
+
+/* DATE */
+.review-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* CONTENT */
+.review-content {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+/* ACTIONS */
+.review-actions .btn-link {
+  font-size: 0.8rem;
+  color: var(--primary);
+}
+
+.review-actions .btn-link:hover {
+  text-decoration: underline;
+}
+
+/* EDIT BOX */
+.review-edit-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* REMOVE LAST BORDER */
+.review-item:last-child {
+  border-bottom: none;
+}
+
+/* ===== CONTAINER ===== */
+.review-form-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+}
+
+//* TEXTAREA BASE */
+.review-textarea {
+  background: var(--bg-main) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* PLACEHOLDER */
+.review-textarea::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+/* FOCUS STATE */
+.review-textarea:focus {
+  background: var(--bg-main) !important;
+  color: var(--text-main) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+}
+
+/* DARK MODE EXTRA FIX */
+[data-theme="dark"] .review-textarea {
+  background: var(--bg-card) !important;
+}
+
+/* ===== STAR RATING ===== */
+.star-rating-input {
+  display: flex;
+  gap: 4px;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.star {
+  color: #d1d5db;
+  transition: 0.2s;
+}
+
+.star.active {
+  color: #facc15;
+}
+
+/* ===== HOVER EFFECT ===== */
+.star:hover {
+  color: #facc15;
+}
+</style>

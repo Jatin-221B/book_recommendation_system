@@ -38,7 +38,9 @@
   <% if @books.respond_to?(:total_pages) && @books.total_pages > 1 %>
     <div class="row mt-4">
       <div class="col text-center">
+        <div class="paginate">
         <%= paginate @books %>
+        </div>
       </div>
     </div>
   <% end %>
@@ -46,54 +48,79 @@
 </div>
 
 <style>
-./* Each column stretches to match its neighbours */
-.col-6, .col-sm-4, .col-md-3, .col-lg-2 {
-  display: flex;
-}
 
-.book-card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  transition: transform 0.2s ease;
-}
+  ./* Each column stretches to match its neighbours */ 
+  .col-6, .col-sm-4, .col-md-3, .col-lg-2 { 
+    display: flex; 
+  }
+  
+  .book-card { 
+    display: flex; 
+    flex-direction: column; 
+    width: 100%; 
+    transition: transform 0.2s ease; 
+    } 
+  .book-card:hover { 
+    transform: translateY(-6px) scale(1.02); 
+    } 
+  .book-cover { 
+    position: relative; 
+    overflow: hidden; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px var(--shadow); 
+    background: var(--border); 
+    margin-bottom: 0.75rem; 
+    aspect-ratio: 2 / 3; /* bring this back for uniform cover heights */ 
+    } 
 
-.book-card:hover {
-  transform: translateY(-6px) scale(1.02);
-}
+  .book-cover:hover { 
+    box-shadow:  0 12px 20px var(--shadow); 
+  }
+      
+  .book-cover img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; /* fills the box */ 
+    object-position: center top; /* anchors to top edge */ 
+    display: block; 
+  } 
+    
+  .book-info { 
+    flex: 1; /* pushes info to fill remaining card space */ 
+    display: flex; 
+    flex-direction: column; 
+    padding: 0 0.25rem; 
+  } 
+  
+    
+  .book-title {
+    color: var(--text-main);
+  }
 
-.book-cover {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  background: #f0f0f0;
-  margin-bottom: 0.75rem;
-  aspect-ratio: 2 / 3;   /* bring this back for uniform cover heights */
-}
+  .book-card:hover .book-title {
+    color: var(--title-hover) !important;
+  }
 
-.book-cover:hover {
-  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
-}
-.book-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;         /* fills the box */
-  object-position: center top; /* anchors to top edge */
-  display: block;
-}
+ 
+  .book-author {
+    color: var(--text-secondary);
+  }
 
-.book-info {
-  flex: 1;                   /* pushes info to fill remaining card space */
-  display: flex;
-  flex-direction: column;
-  padding: 0 0.25rem;
-}
+  .book-author:hover {
+    color: var(--title-hover) !important;
+  }
 
-.book-genre {
-  margin-top: auto;          /* pins badge to bottom of card */
-  align-self: flex-start;
-  font-size: 0.7rem;
-  padding: 0.25rem 0.5rem;
-}
+  .book-genre { 
+    margin-top: auto; 
+    align-self: flex-start; 
+    font-size: 0.7rem; 
+    padding: 0.25rem 0.5rem; 
+    background: var(--primary) !important;
+    color: white;
+    border-radius: 6px;
+  }
+
+  .text-muted {
+    color: var(--text-main) !important;
+  }
 </style>
