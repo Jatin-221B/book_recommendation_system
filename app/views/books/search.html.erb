@@ -99,6 +99,10 @@
   transition: transform 0.2s ease;
 }
 
+.book-card:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+
 .book-cover {
   position: relative;
   overflow: hidden;
@@ -107,6 +111,10 @@
   background: #f0f0f0;
   margin-bottom: 0.75rem;
   aspect-ratio: 2 / 3;   /* bring this back for uniform cover heights */
+}
+
+.book-cover:hover {
+  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
 }
 
 .book-cover img {
