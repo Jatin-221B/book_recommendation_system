@@ -1,89 +1,261 @@
-<div class="container-fluid py-5">
+<% if @author.present? %>
 
-  <% if @author.present? %>
-
-    <!-- Author Header -->
-    <div class="bg-dark text-white p-5 rounded shadow-sm mb-5">
-      <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <div>
-          <h1 class="fw-bold mb-2"><%= @author.name %></h1>
-          <p class="mb-0 text-light">
-            <%= pluralize(@books.total_count, "book") if @books.respond_to?(:total_count) %>
-          </p>
+  <!-- Author Header -->
+  <div class="author-hero mb-5">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-4">
+        <div class="author-hero-avatar">
+          <%= @author.name.first.upcase %>
         </div>
-
-        <%= link_to "Back to Authors",
-                    authors_path(page: params[:page]),
-                    class: "btn btn-outline-light mt-3 mt-md-0" %>
+        <div>
+          <h1 class="author-hero-name"><%= @author.name %></h1>
+          <span class="author-hero-count">
+            <%= pluralize(@books.total_count, "book") if @books.respond_to?(:total_count) %>
+          </span>
+        </div>
       </div>
+
+      <%= link_to "Back to Authors", request.referer || authors_path, class: "btn custom-btn-outline btn-sm mt-1" %>
     </div>
+  </div>
 
+  <!-- About Section -->
+  <div class="section-card mb-5">
+    <h5 class="section-card-title">About the Author</h5>
+    <p class="section-card-body">
+      <%= @author.bio %>
+    </p>
+  </div>
 
+  <!-- Books Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="section-heading">Books by <%= @author.name %></h5>
+  </div>
 
-    <!-- About Section -->
-    <div class="card shadow-sm border-0 mb-5">
-      <div class="card-body">
-        <h4 class="fw-bold mb-3">About the Author</h4>
-        <p class="text-muted mb-0">
-          <%= @author.bio %>
-        </p>
-      </div>
-    </div>
+  <% if @books.any? %>
+    <div class="row g-4">
+      <% @books.each do |book| %>
+        <div class="col-md-6 col-lg-4">
+          <div class="book-list-card">
 
-
-
-    <!-- Books Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="fw-bold mb-0">Books by <%= @author.name %></h3>
-    </div>
-
-    <% if @books.any? %>
-      <div class="row g-4">
-        <% @books.each do |book| %>
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0">
-              <div class="card-body d-flex flex-column">
-
-                <h5 class="card-title fw-bold">
-                  <%= link_to book.title,
-                              book_path(book),
-                              class: "text-decoration-none text-dark" %>
-                </h5>
-
-                <p class="card-text text-muted small">
-                  <%= truncate(book.description, length: 120) %>
-                </p>
-
-                <div class="mt-auto">
-                  <%= link_to "View Details",
-                              book_path(book),
-                              class: "btn btn-outline-primary btn-sm w-100" %>
-                </div>
-
-              </div>
+            <div class="book-list-card-body">
+              <h6 class="book-list-title">
+                <%= link_to book.title, book_path(book), class: "text-decoration-none" %>
+              </h6>
+              <p class="book-list-desc">
+                <%= truncate(book.description, length: 120) %>
+              </p>
             </div>
+
+            <div class="book-list-card-footer">
+              <span class="genre-badge"><%= book.genre %></span>
+              <%= link_to "View ", book_path(book), class: "book-list-link" %>
+            </div>
+
           </div>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
+    </div>
 
-      <!-- Pagination -->
-      <div class="mt-5 d-flex justify-content-center">
-        <%= paginate @books %>
-      </div>
-
-    <% else %>
-      <div class="alert alert-info">
-        This author has no books listed yet.
-      </div>
-    <% end %>
+    <div class="text-center mt-5">
+      <%= paginate @books %>
+    </div>
 
   <% else %>
-
-    <!-- Error State -->
-    <div class="alert alert-danger text-center">
-      Author not found.
+    <div class="empty-state">
+      <div class="empty-icon">📖</div>
+      <h3 class="empty-title">No books listed yet</h3>
+      <p class="empty-sub">Check back soon</p>
     </div>
-
   <% end %>
 
-</div>
+<% else %>
+  <div class="empty-state">
+    <div class="empty-icon">✍️</div>
+    <h3 class="empty-title">Author not found</h3>
+    <%= link_to "← Back to Authors", authors_path, class: "btn custom-btn-outline btn-sm mt-2" %>
+  </div>
+<% end %>
+
+<style>
+
+/* ===== HERO ===== */
+.author-hero {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  border-radius: 14px;
+  padding: 2rem 2rem;
+  color: white;
+}
+
+.author-hero-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-size: 1.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.4);
+}
+
+.author-hero-name {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: white;
+}
+
+.author-hero-count {
+  font-size: 0.85rem;
+  background: rgba(255,255,255,0.15);
+  padding: 3px 10px;
+  border-radius: 20px;
+  color: rgba(255,255,255,0.9);
+}
+
+/* ===== ABOUT CARD ===== */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.section-card-title {
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+}
+
+.section-card-body {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ===== SECTION HEADING ===== */
+.section-heading {
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+/* ===== BOOK LIST CARD ===== */
+.book-list-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.book-list-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 20px var(--shadow);
+}
+
+.book-list-card-body {
+  flex: 1;
+}
+
+.book-list-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.book-list-title a {
+  color: var(--text-main);
+  transition: color 0.2s;
+}
+
+.book-list-title a:hover {
+  color: var(--primary);
+}
+
+.book-list-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* ===== CARD FOOTER ===== */
+.book-list-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  margin-top: 1rem;
+}
+
+.book-list-link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.book-list-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== GENRE BADGE ===== */
+.genre-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ===== BUTTON ===== */
+.custom-btn-outline {
+  border: 1px solid rgba(255,255,255,0.5);
+  color: white;
+  background: transparent;
+  border-radius: 8px;
+}
+
+.custom-btn-outline:hover {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border-color: white;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.empty-sub {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+</style>

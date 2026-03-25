@@ -1,4 +1,7 @@
-<h4 class="fw-bold text-center mb-4">Log In</h4>
+<h4 class="fw-bold text-center mb-1">Welcome Back</h4>
+<p class="text-center mb-4" style="font-size: 0.85rem; color: var(--text-secondary);">
+  Sign in to your BookNest account
+</p>
 
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
 
@@ -8,7 +11,8 @@
     <%= f.email_field :email,
                       autofocus: true,
                       autocomplete: "email",
-                      class: "form-control" %>
+                      placeholder: "you@example.com",
+                      class: "form-control auth-input" %>
   </div>
 
   <!-- Password -->
@@ -16,27 +20,87 @@
     <%= f.label :password, class: "form-label" %>
     <%= f.password_field :password,
                          autocomplete: "current-password",
-                         class: "form-control" %>
+                         placeholder: "Your password",
+                         class: "form-control auth-input" %>
   </div>
 
-  <!-- Remember Me -->
-  <% if devise_mapping.rememberable? %>
-    <div class="form-check mb-3">
-      <%= f.check_box :remember_me, class: "form-check-input" %>
-      <%= f.label :remember_me, class: "form-check-label" %>
-    </div>
-  <% end %>
+  <!-- Remember Me + Forgot Password -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <% if devise_mapping.rememberable? %>
+      <div class="form-check mb-0">
+        <%= f.check_box :remember_me, class: "form-check-input" %>
+        <%= f.label :remember_me, class: "form-check-label",
+                    style: "font-size: 0.85rem; color: var(--text-secondary);" %>
+      </div>
+    <% end %>
+  </div>
 
   <!-- Submit -->
   <div class="d-grid mb-3">
-    <%= f.submit "Log in", class: "btn btn-primary" %>
+    <%= f.submit "Sign In", class: "btn btn-auth" %>
   </div>
 
 <% end %>
 
-<hr>
+<div class="auth-divider">— or —</div>
 
-<!-- Devise Links -->
 <div class="text-center">
   <%= render "devise/shared/links" %>
 </div>
+
+<style>
+  .auth-input {
+    background: var(--bg-main) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .auth-input::placeholder {
+    color: var(--text-secondary) !important;
+  }
+
+  .auth-input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12) !important;
+    outline: none;
+  }
+
+  .btn-auth {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    width: 100%;
+    transition: background 0.2s;
+  }
+
+  .btn-auth:hover {
+    background: var(--primary-hover);
+    color: white;
+  }
+
+  .auth-divider {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
+  }
+
+  .form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+</style>

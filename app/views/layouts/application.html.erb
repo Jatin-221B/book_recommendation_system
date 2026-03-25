@@ -87,7 +87,7 @@
       .search-box input::placeholder {
         color: var(--text-secondary) !important;
       }
-      
+
       .search-box button {
         background: var(--primary);
         color: white;
@@ -174,6 +174,81 @@
           margin-top: 10px;
         }
       }
+      /* ===== PAGINATION ===== */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 20px 0;
+      align-items: center;
+    }
+
+    .pagination a,
+    .pagination .current {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    /* PREV / NEXT / FIRST / LAST — wider */
+    .pagination a[rel="prev"],
+    .pagination a[rel="next"],
+    .pagination a:first-child,
+    .pagination a:last-child,
+    .pagination span:first-child,
+    .pagination span:last-child {
+      width: auto;
+      padding: 0 12px;
+    }
+    /* CURRENT PAGE */
+    .pagination .current {
+      color: var(--primary);
+      border-color: var(--primary);
+      font-weight: 700;
+      background: var(--bg-card);
+    }
+
+    /* DISABLED */
+    .pagination .disabled {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      padding: 0 12px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      background: var(--bg-main);
+      font-size: 0.85rem;
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .navbar-signout {
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: transparent;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.35rem 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .navbar-signout:hover {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: white;
+    }
     </style>
   </head>
 
@@ -210,40 +285,36 @@
           </div>
         <% end %>
 
-        <!-- RIGHT -->
-        <ul class="navbar-nav">
-          <% if user_signed_in? %>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                <%= current_user.name %>
-                <% if current_user.admin? %>
-                  <span class="badge bg-danger ms-1">ADMIN</span>
-                <% end %>
-              </a>
-
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><%= link_to "My Profile", user_path(current_user), class: "dropdown-item" %></li>
-
-                <li>
-                  <button id="theme-toggle" class="dropdown-item">
-                     Dark Mode
-                  </button>
-                </li>
-
-                <li><hr class="dropdown-divider"></li>
-
-                <li>
-                  <%= button_to "Sign Out",
-                        destroy_user_session_path,
-                        method: :delete,
-                        class: "dropdown-item text-danger",
-                        form: { style: "display:inline;" },
-                        data: { turbo: false } %>
-                </li>
-              </ul>
+       <!-- RIGHT -->
+      <ul class="navbar-nav align-items-center gap-2">
+        <% if user_signed_in? %>
+          <li class="nav-item">
+            <%= link_to current_user.name, user_path(current_user), class: "nav-link" %>
+          </li>
+          <% if current_user.admin? %>
+            <li class="nav-item">
+              <span class="badge bg-danger">ADMIN</span>
             </li>
           <% end %>
-        </ul>
+          <li class="nav-item">
+            <%= button_to "Sign Out",
+                  destroy_user_session_path,
+                  method: :delete,
+                  class: "btn btn-sm navbar-signout",
+                  form: { style: "display:inline;" },
+                  data: { turbo: false } %>
+          </li>
+        <% else %>
+          <li class="nav-item">
+            <%= link_to "Sign In", new_user_session_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Sign Up", new_user_registration_path,
+                  class: "btn btn-primary btn-sm px-3",
+                  style: "border-radius: 8px;" %>
+          </li>
+        <% end %>
+      </ul>
 
       </div>
     </div>

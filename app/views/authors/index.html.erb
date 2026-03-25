@@ -1,60 +1,209 @@
-<div class="container-fluid py-4">
-
-  <!-- Page Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="fw-bold">Authors</h1>
-    <%= link_to "Back to Home", root_path, class: "btn btn-outline-secondary btn-sm" %>
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-5">
+  <div>
+    <h1 class="page-title">Authors</h1>
+    <p class="page-sub">Explore the minds behind the books</p>
   </div>
+  <%= link_to "← Home", root_path, class: "btn btn-outline-secondary btn-sm custom-btn" %>
+</div>
 
+<% if @authors.any? %>
 
-  <% if @authors.any? %>
+  <div class="row g-4">
+    <% @authors.each do |author| %>
+      <div class="col-md-6 col-lg-4">
+        <div class="author-card">
 
-    <!-- Authors Grid -->
-    <div class="row g-4">
-      <% @authors.each do |author| %>
-        <div class="col-md-6 col-lg-4">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body d-flex flex-column">
-
-              <h5 class="card-title fw-bold">
-                <%= link_to author.name,
-                            author_path(author),
-                            class: "text-decoration-none text-dark" %>
+          <!-- Avatar + Name -->
+          <div class="author-card-header">
+            <div class="author-avatar">
+              <%= author.name.first.upcase %>
+            </div>
+            <div>
+              <h5 class="author-name">
+                <%= link_to author.name, author_path(author), class: "text-decoration-none" %>
               </h5>
-
-              <p class="card-text text-muted small">
-                <%= truncate(author.bio, length: 100) %>
-              </p>
-
-              <div class="mt-auto d-flex justify-content-between align-items-center">
-                <span class="badge bg-secondary">
-                  <%= pluralize(author.books.count, 'book') %>
-                </span>
-
-                <%= link_to "View Profile",
-                            author_path(author, page: params[:page]),
-                            class: "btn btn-outline-primary btn-sm" %>
-              </div>
-
+              <span class="author-book-count">
+                <%= pluralize(author.books.count, 'book') %>
+              </span>
             </div>
           </div>
+
+          <!-- Bio -->
+          <p class="author-bio">
+            <%= truncate(author.bio, length: 120) %>
+          </p>
+
+          <!-- Footer -->
+          <div class="author-card-footer">
+            <%= link_to "View Profile ", author_path(author), class: "author-link" %>
+          </div>
+
         </div>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
+  </div>
 
+  <div class="text-center mt-5">
+    <%= paginate @authors %>
+  </div>
 
-    <!-- Pagination -->
-    <div class="mt-4 d-flex justify-content-center">
-      <%= paginate @authors %>
-    </div>
+<% else %>
 
-  <% else %>
+  <div class="empty-state">
+    <div class="empty-icon">✍️</div>
+    <h3 class="empty-title">No authors yet</h3>
+    <p class="empty-sub">Check back soon</p>
+  </div>
 
-    <!-- Empty State -->
-    <div class="alert alert-info text-center">
-      No authors found.
-    </div>
+<% end %>
 
-  <% end %>
+<style>
 
-</div>
+/* ===== PAGE HEADER ===== */
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.2rem;
+}
+
+.page-sub {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ===== AUTHOR CARD ===== */
+.author-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.author-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 20px var(--shadow);
+}
+
+/* ===== HEADER ===== */
+.author-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+/* ===== AVATAR ===== */
+.author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ===== NAME ===== */
+.author-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.15rem;
+}
+
+.author-name a {
+  color: var(--text-main);
+  transition: color 0.2s;
+}
+
+.author-name a:hover {
+  color: var(--primary);
+}
+
+/* ===== BOOK COUNT ===== */
+.author-book-count {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ===== BIO ===== */
+.author-bio {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+/* ===== FOOTER ===== */
+.author-card-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.author-link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.author-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.empty-sub {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ===== BUTTON ===== */
+.custom-btn {
+  border-radius: 8px;
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+.custom-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+</style>

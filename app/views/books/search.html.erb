@@ -1,94 +1,154 @@
-<div class="container-fluid py-4">
-  
-  <!-- Search Form -->
-  <div class="row mb-4">
-    <div class="col-md-8 mx-auto">
-      <h1 class="text-center mb-4">Search Books</h1>
-      
-      <%= form_with url: search_books_path, method: :get, local: true do |f| %>
-        <div class="input-group input-group-lg shadow-sm">
-          <%= f.text_field :q, 
-                          value: @query,
-                          placeholder: "Search by title or author...",
-                          class: "form-control",
-                          autofocus: true %>
-          <button class="btn btn-primary px-4" type="submit">
-            🔍 Search
-          </button>
+<!-- Search Form -->
+<div class="search-page-header mb-5">
+  <h1 class="search-page-title">Search Books</h1>
+  <p class="search-page-sub">Find books by title or author</p>
+
+  <%= form_with url: search_books_path, method: :get, local: true do |f| %>
+    <div class="search-input-wrap">
+      <%= f.text_field :q,
+            value: @query,
+            placeholder: "Search by title or author...",
+            class: "search-input",
+            autofocus: true %>
+      <button class="search-btn" type="submit">🔍 Search</button>
+    </div>
+  <% end %>
+</div>
+
+<!-- Results -->
+<% if @query.present? %>
+  <% if @books.any? %>
+
+    <p class="search-results-label mb-4">
+      Found <strong><%= @books.total_count %></strong>
+      <%= 'result'.pluralize(@books.total_count) %> for
+      <em>"<%= @query %>"</em>
+    </p>
+
+    <div class="row g-4 books-grid">
+      <% @books.each do |book| %>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <%= link_to book_path(book), class: "text-decoration-none w-100" do %>
+            <div class="book-card">
+
+              <div class="book-cover">
+                <%= image_tag book.cover_url,
+                              alt: book.title,
+                              loading: "lazy" %>
+              </div>
+
+              <div class="book-info">
+                <h6 class="book-title"><%= truncate(book.title, length: 50) %></h6>
+                <p class="book-author"><%= truncate(book.author.name, length: 35) %></p>
+                <span class="genre-badge"><%= book.genre %></span>
+              </div>
+
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
-  </div>
 
-  <!-- Results -->
-  <% if @query.present? %>
-    <% if @books.any? %>
-      
-      <div class="mb-3">
-        <h5 class="text-muted">
-          Found <%= @books.total_count %> 
-          <%= 'result'.pluralize(@books.total_count) %> 
-          for "<%= @query %>"
-        </h5>
-      </div>
-
-      <!-- Books Grid (same as index) -->
-      <div class="row g-3">
-        <% @books.each do |book| %>
-          <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <%= link_to book_path(book), class: "text-decoration-none" do %>
-              <div class="book-card">
-                <div class="book-cover">
-                  <%= image_tag book.cover_url, 
-                               alt: book.title,
-                               class: "img-fluid",
-                               loading: "lazy" %>
-                </div>
-                
-                <div class="book-info">
-                  <h6 class="book-title"><%= truncate(book.title, length: 60) %></h6>
-                  <p class="book-author"><%= truncate(book.author.name, length: 40) %></p>
-                  <span class="badge bg-primary book-genre"><%= book.genre %></span>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-
-      <!-- Pagination -->
-      <div class="row mt-4">
-        <div class="col text-center">
-          <%= paginate @books, params: { q: @query } %>
-        </div>
-      </div>
-
-    <% else %>
-      <!-- No Results -->
-      <div class="text-center py-5">
-        <div class="mb-3" style="font-size: 4rem;">📚</div>
-        <h3>No books found for "<%= @query %>"</h3>
-        <p class="text-muted">Try a different search term</p>
-        <%= link_to "Browse all books", books_path, class: "btn btn-primary mt-3" %>
-      </div>
-    <% end %>
-    
-  <% else %>
-    <!-- Empty State -->
-    <div class="text-center py-5">
-      <div class="mb-3" style="font-size: 5rem;">🔍</div>
-      <h3>Search our collection</h3>
-      <p class="text-muted">Find books by title or author</p>
-      
-    
+    <div class="text-center mt-5">
+      <%= paginate @books, params: { q: @query } %>
     </div>
+
+  <% else %>
+
+    <!-- No Results -->
+    <div class="empty-state">
+      <div class="empty-icon">📚</div>
+      <h3 class="empty-title">No results for "<%= @query %>"</h3>
+      <p class="empty-sub">Try a different title or author name</p>
+      <%= link_to "Browse all books", books_path, class: "btn btn-primary custom-btn mt-2" %>
+    </div>
+
   <% end %>
 
-</div>
+<% else %>
+
+  <!-- Empty State -->
+  <div class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h3 class="empty-title">Search our collection</h3>
+    <p class="empty-sub">Type a title or author name above to get started</p>
+  </div>
+
+<% end %>
 
 <style>
-/* Each column stretches to match its neighbours */
-.col-6, .col-sm-4, .col-md-3, .col-lg-2 {
+
+/* ===== PAGE HEADER ===== */
+.search-page-header {
+  text-align: center;
+  padding: 2rem 0 1rem;
+}
+
+.search-page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.4rem;
+}
+
+.search-page-sub {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ===== SEARCH INPUT ===== */
+.search-input-wrap {
+  display: flex;
+  max-width: 580px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.search-btn {
+  padding: 0.75rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* ===== RESULTS LABEL ===== */
+.search-results-label {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.search-results-label strong,
+.search-results-label em {
+  color: var(--text-main);
+}
+
+/* ===== BOOK GRID ===== */
+.books-grid > [class*="col-"] {
   display: flex;
 }
 
@@ -96,46 +156,105 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  transition: transform 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .book-card:hover {
   transform: translateY(-6px) scale(1.02);
 }
 
+/* ===== COVER ===== */
 .book-cover {
-  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
   overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  background: #f0f0f0;
+  background: var(--border);
+  box-shadow: 0 6px 12px var(--shadow);
   margin-bottom: 0.75rem;
-  aspect-ratio: 2 / 3;   /* bring this back for uniform cover heights */
+  flex-shrink: 0;
+  transition: box-shadow 0.25s;
 }
 
 .book-cover:hover {
-  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 12px 20px var(--shadow);
 }
 
 .book-cover img {
   width: 100%;
   height: 100%;
-  object-fit: cover;         /* fills the box */
-  object-position: center top; /* anchors to top edge */
+  object-fit: cover;
+  object-position: center top;
   display: block;
 }
 
+/* ===== INFO ===== */
 .book-info {
-  flex: 1;                   /* pushes info to fill remaining card space */
+  flex: 1;
   display: flex;
   flex-direction: column;
   padding: 0 0.25rem;
 }
 
-.book-genre {
-  margin-top: auto;          /* pins badge to bottom of card */
-  align-self: flex-start;
-  font-size: 0.7rem;
-  padding: 0.25rem 0.5rem;
+.book-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.3;
+  min-height: 2.4rem;
+  margin-bottom: 0.25rem;
 }
+
+.book-author {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.genre-badge {
+  margin-top: auto;
+  align-self: flex-start;
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.empty-sub {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ===== BUTTON ===== */
+.btn-primary {
+  background: var(--primary);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.custom-btn {
+  border-radius: 8px;
+}
+
 </style>
