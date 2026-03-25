@@ -1,18 +1,21 @@
-<h4 class="fw-bold text-center mb-4">Create Account</h4>
+<h4 class="fw-bold text-center mb-1">Create Account</h4>
+<p class="text-center mb-4" style="font-size: 0.85rem; color: var(--text-secondary);">
+  Join BookNest and start discovering books
+</p>
+
+<!-- Error Messages -->
+<% if resource.errors.any? %>
+  <div class="alert alert-danger" style="font-size: 0.85rem;">
+    <strong><%= pluralize(resource.errors.count, "error") %> prevented sign up:</strong>
+    <ul class="mb-0 mt-2">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-
-  <!-- Error Messages -->
-  <% if resource.errors.any? %>
-    <div class="alert alert-danger">
-      <strong><%= pluralize(resource.errors.count, "error") %> prevented this account from being created:</strong>
-      <ul class="mb-0 mt-2">
-        <% resource.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
 
   <!-- Name -->
   <div class="mb-3">
@@ -20,7 +23,8 @@
     <%= f.text_field :name,
                      autofocus: true,
                      autocomplete: "name",
-                     class: "form-control" %>
+                     placeholder: "Your full name",
+                     class: "form-control auth-input" %>
   </div>
 
   <!-- Email -->
@@ -28,41 +32,94 @@
     <%= f.label :email, class: "form-label" %>
     <%= f.email_field :email,
                       autocomplete: "email",
-                      class: "form-control" %>
+                      placeholder: "you@example.com",
+                      class: "form-control auth-input" %>
   </div>
 
   <!-- Password -->
   <div class="mb-3">
     <%= f.label :password, class: "form-label" %>
-
     <% if @minimum_password_length %>
-      <div class="form-text mb-1">
+      <span class="ms-1" style="font-size: 0.75rem; color: var(--text-secondary);">
         (<%= @minimum_password_length %> characters minimum)
-      </div>
+      </span>
     <% end %>
-
     <%= f.password_field :password,
                          autocomplete: "new-password",
-                         class: "form-control" %>
+                         placeholder: "Choose a password",
+                         class: "form-control auth-input mt-1" %>
   </div>
 
   <!-- Password Confirmation -->
-  <div class="mb-3">
+  <div class="mb-4">
     <%= f.label :password_confirmation, class: "form-label" %>
     <%= f.password_field :password_confirmation,
                          autocomplete: "new-password",
-                         class: "form-control" %>
+                         placeholder: "Confirm your password",
+                         class: "form-control auth-input" %>
   </div>
 
   <!-- Submit -->
   <div class="d-grid mb-3">
-    <%= f.submit "Sign up", class: "btn btn-success" %>
+    <%= f.submit "Create Account", class: "btn btn-auth" %>
   </div>
 
 <% end %>
 
-<hr>
+<div class="auth-divider">— or —</div>
 
 <div class="text-center">
   <%= render "devise/shared/links" %>
 </div>
+
+<style>
+  .auth-input {
+    background: var(--bg-main) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .auth-input::placeholder {
+    color: var(--text-secondary) !important;
+  }
+
+  .auth-input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12) !important;
+    outline: none;
+  }
+
+  .btn-auth {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    width: 100%;
+    transition: background 0.2s;
+  }
+
+  .btn-auth:hover {
+    background: var(--primary-hover);
+    color: white;
+  }
+
+  .auth-divider {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
+  }
+</style>

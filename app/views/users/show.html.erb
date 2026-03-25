@@ -1,117 +1,341 @@
-<div class="container-fluid py-5">
-
 <% if @user.present? %>
 
-  <!-- user header -->
-  <div class="card shadow-sm border-0 mb-4">
-    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+  <!-- User Hero -->
+  <div class="user-hero mb-5">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
 
-      <div>
-        <h1 class="fw-bold mb-1"><%= @user.name %></h1>
-        <p class="text-muted mb-0">
-          <strong>Email:</strong> <%= @user.email %>
-        </p>
+      <div class="d-flex align-items-center gap-4">
+        <div class="user-avatar">
+          <%= @user.name.first.upcase %>
+        </div>
+        <div>
+          <h1 class="user-hero-name"><%= @user.name %></h1>
+          <p class="user-hero-email"><%= @user.email %></p>
+          <div class="d-flex gap-2 mt-2 flex-wrap">
+            <span class="user-stat-pill">
+              <%= pluralize(@favourite_books.count, "favourite") %>
+            </span>
+            <% if current_user&.admin? && current_user != @user %>
+              <span class="user-stat-pill admin-pill">Admin View</span>
+            <% end %>
+          </div>
+        </div>
       </div>
 
-      <div class="mt-3 mt-md-0">
-        <%= link_to "Back Home", root_path, class: "btn btn-outline-secondary btn-sm" %>
-        <%if current_user.admin?%>
-          <%= link_to "Back to Users",
-                      users_path,
-                      class: "btn btn-outline-secondary btn-sm" %>
-        <%end%> 
-        <%= link_to "View Reviews",
-                    user_reviews_path(@user),
-                    class: "btn btn-outline-primary btn-sm me-2" %>
-          
+      <!-- Action Buttons -->
+      <div class="d-flex flex-wrap gap-2 mt-2">
+        <%= link_to "Home", root_path, class: "btn user-btn-outline btn-sm" %>
+
+        <%= link_to "Reviews", user_reviews_path(@user), class: "btn user-btn-outline btn-sm" %>
+
+        <% if current_user == @user %>
+          <%= link_to "Edit Profile", edit_user_registration_path(@user), class: "btn user-btn-primary btn-sm" %>
+
+          <%= button_to "Delete Account",
+                        user_path(@user),
+                        method: :delete,
+                        data: { turbo_confirm: "Are you sure? This cannot be undone." },
+                        class: "btn btn-outline-danger btn-sm",
+                        form_class: "d-inline" %>
+        <% end %>
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme(this)" class="btn user-btn-outline btn-sm">
+           Dark Mode
+        </button>
+
         
-        
-        <%if current_user == @user %>
-          <%= link_to "Edit",
-                      edit_user_path(@user),
-                      class: "btn btn-outline-primary btn-sm me-2" %>
-
-          <%= button_to "Delete User",
-                          user_path(@user),
-                          method: :delete,
-                          data: { turbo_confirm: "Are you sure?" },
-                          class: "btn btn-outline-danger btn-sm",
-                          form_class: "d-inline" %>
-        <%end%>
-
-      </div>  
-
-    </div>
-  </div>
-
-
-
-  <!-- favourites-->
-  <div class="card shadow-sm border-0">
-    <div class="card-body">
-
-      <h4 class="fw-bold mb-4">
-        Favourite Books (<%= @favourite_books.count %>)
-      </h4>
-
-      <% if @favourite_books_pag.any? %>
-
-        <div class="row g-4">
-
-          <% @favourite_books_pag.each do |book| %>
-
-            <div class="col-md-6 col-lg-4">
-              <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body d-flex flex-column">
-
-                  <h6 class="fw-bold">
-                    <%= link_to book.title,
-                                book_path(book),
-                                class: "text-decoration-none text-dark" %>
-                  </h6>
-
-                  <p class="text-muted small mb-3">
-                    by
-                    <%= link_to book.author.name,
-                                author_path(book.author),
-                                class: "text-decoration-none" %>
-                  </p>
-
-                  <div class="mt-auto">
-                    <%= link_to "View Book",
-                                book_path(book),
-                                class: "btn btn-outline-primary btn-sm w-100" %>
-                  </div>
-
-                </div>
               </div>
+
             </div>
-          
-          <% end %>
-         
+          </div>
 
-        </div>
-        <div class="mt-5 d-flex justify-content-center">
-          <%=paginate @favourite_books_pag%>
-        </div>
-
-      <% else %>
-
-        <div class="alert alert-info">
-          No favourite books yet.
-        </div>
-
-      <% end %>
-
-    </div>
+  <!-- Favourites Section -->
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <h5 class="section-heading mb-0">Favourite Books</h5>
+    <span class="count-pill"><%= @favourite_books.count %></span>
   </div>
+
+  <% if @favourite_books_pag.any? %>
+
+    <div class="row g-4">
+      <% @favourite_books_pag.each do |book| %>
+        <div class="col-md-6 col-lg-4">
+          <div class="fav-card">
+
+            <div class="fav-card-body">
+              <h6 class="fav-title">
+                <%= link_to book.title, book_path(book), class: "text-decoration-none" %>
+              </h6>
+              <p class="fav-author">
+                by <%= link_to book.author.name, author_path(book.author), class: "text-decoration-none" %>
+              </p>
+            </div>
+
+            <div class="fav-card-footer">
+              <span class="genre-badge"><%= book.genre %></span>
+              <%= link_to "View →", book_path(book), class: "fav-link" %>
+            </div>
+
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="text-center mt-5">
+      <%= paginate @favourite_books_pag %>
+    </div>
+
+  <% else %>
+    <div class="empty-state">
+      
+      <h3 class="empty-title">No favourites yet</h3>
+      <p class="empty-sub">Start adding books you love</p>
+      <%= link_to "Browse Books", books_path, class: "btn user-btn-primary btn-sm mt-2" %>
+    </div>
+  <% end %>
 
 <% else %>
-
-  <div class="alert alert-danger text-center">
-    User not found.
+  <div class="empty-state">
+    <div class="empty-icon">👤</div>
+    <h3 class="empty-title">User not found</h3>
+    <%= link_to "← Home", root_path, class: "btn user-btn-outline btn-sm mt-2" %>
   </div>
-
 <% end %>
 
-</div>
+<style>
+
+/* ===== HERO ===== */
+.user-hero {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  border-radius: 14px;
+  padding: 2rem;
+  color: white;
+}
+
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-size: 1.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.4);
+}
+
+.user-hero-name {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.2rem;
+}
+
+.user-hero-email {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+}
+
+.user-stat-pill {
+  font-size: 0.78rem;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.admin-pill {
+  background: rgba(239,68,68,0.3);
+  border-color: rgba(239,68,68,0.4);
+}
+
+/* ===== BUTTONS ===== */
+
+/* In the user profile style block */
+.user-hero .btn-outline-danger {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: white;
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.user-hero .btn-outline-danger:hover {
+  background: rgba(239, 68, 68, 0.5);
+  border-color: white;
+  color: white;
+}
+
+.user-btn-outline {
+  border: 1px solid rgba(255,255,255,0.5);
+  color: white;
+  background: transparent;
+  border-radius: 8px;
+}
+
+.user-btn-outline:hover {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border-color: white;
+}
+
+.user-btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.user-btn-primary:hover {
+  background: var(--primary-hover);
+  color: white;
+}
+
+/* ===== SECTION HEADING ===== */
+.section-heading {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.count-pill {
+  font-size: 0.78rem;
+  background: var(--primary);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* ===== FAV CARD ===== */
+.fav-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.fav-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 20px var(--shadow);
+}
+
+.fav-card-body {
+  flex: 1;
+}
+
+.fav-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.fav-title a {
+  color: var(--text-main);
+  transition: color 0.2s;
+}
+
+.fav-title a:hover {
+  color: var(--primary);
+}
+
+.fav-author {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.fav-author a {
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.fav-author a:hover {
+  color: var(--primary);
+}
+
+/* ===== CARD FOOTER ===== */
+.fav-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  margin-top: 1rem;
+}
+
+.fav-link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.fav-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== GENRE BADGE ===== */
+.genre-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.empty-sub {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+</style>
+<script>
+  function toggleTheme(btn) {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      btn.textContent = ' Dark Mode';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      btn.textContent = ' Light Mode';
+    }
+  }
+
+  // Set correct label on page load
+  document.addEventListener('turbo:load', function() {
+    const btn = document.querySelector('[onclick="toggleTheme(this)"]');
+    if (!btn) return;
+    btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark'
+      ? ' Light Mode'
+      : ' Dark Mode';
+  });
+</script>

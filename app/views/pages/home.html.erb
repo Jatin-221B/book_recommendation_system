@@ -1,17 +1,17 @@
-<section class="bg-dark text-white text-center py-5 mb-5 rounded shadow-sm">
+<section class="hero-section text-center py-5 mb-5 rounded">
   <div class="container-fluid">
-    <h1 class="display-4 fw-bold">Welcome to BookNest</h1>
+    <h1 class="display-5 fw-bold">Welcome to BookNest</h1>
     <p class="lead mt-3">
       Discover books, read reviews, and share your thoughts
     </p>
   </div>
 </section>
 
-<!-- recent books-->
+<!-- RECENT BOOKS -->
 <section class="mb-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">Recently Added Books</h2>
-    <%= link_to "View All", books_path, class: "btn btn-sm btn-outline-primary" %>
+    <h2 class="section-heading">Recently Added</h2>
+    <%= link_to "View All", books_path, class: "btn btn-sm btn-outline-primary custom-btn" %>
   </div>
 
   <% if @recent_books.any? %>
@@ -19,30 +19,29 @@
       <% @recent_books.each do |book| %>
         <div class="col-6 col-sm-4 col-md-3 col-lg-2">
           <%= link_to book_path(book), class: "text-decoration-none w-100" do %>
+            
             <div class="book-card-home">
-              
-              <!-- Cover Image -->
+
               <div class="book-cover-home">
-                <%= image_tag book.cover_url, 
-                             alt: book.title %>
+                <%= image_tag book.cover_url, alt: book.title %>
               </div>
-              
-              <!-- Book Info -->
-              <div class="book-info-home mt-2">
+
+              <div class="book-info-home">
                 <h6 class="book-title-home">
                   <%= truncate(book.title, length: 50) %>
                 </h6>
-                
-                <p class="book-author-home mb-1">
+
+                <p class="book-author-home">
                   <%= truncate(book.author.name, length: 35) %>
                 </p>
-                
-                <span class="badge bg-secondary badge-sm">
+
+                <span class="badge genre-badge">
                   <%= book.genre %>
                 </span>
               </div>
-              
+
             </div>
+
           <% end %>
         </div>
       <% end %>
@@ -54,66 +53,79 @@
   <% end %>
 </section>
 
-<!-- explore section -->
-<section class="bg-light p-4 rounded shadow-sm">
-  <h2 class="fw-bold mb-3">Explore</h2>
+<!-- EXPLORE -->
+<section class="explore-section p-4 rounded">
+  <h2 class="section-heading mb-3">Explore</h2>
 
-  <div class="row g-3">
-    <div class="col-md-6 d-flex">
-      <div class="card border-0 shadow-sm w-100">
-        <div class="card-body">
-          <h5 class="card-title">Browse All Books</h5>
-          <p class="card-text text-muted">
-            Discover our full collection of books across genres.
-          </p>
-          <%= link_to "Browse Books", books_path, class: "btn btn-primary btn-sm" %>
-        </div>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="explore-card">
+        <h5>Browse All Books</h5>
+        <p>Discover our full collection across genres.</p>
+        <%= link_to "Browse Books", books_path, class: "btn btn-primary btn-sm custom-btn" %>
       </div>
     </div>
 
-    <div class="col-md-6 d-flex">
-      <div class="card border-0 shadow-sm w-100">
-        <div class="card-body">
-          <h5 class="card-title">Browse Authors</h5>
-          <p class="card-text text-muted">
-            Explore authors and learn more about their works.
-          </p>
-          <%= link_to "Browse Authors", authors_path, class: "btn btn-primary btn-sm" %>
-        </div>
+    <div class="col-md-6">
+      <div class="explore-card">
+        <h5>Browse Authors</h5>
+        <p>Explore authors and their works.</p>
+        <%= link_to "Browse Authors", authors_path, class: "btn btn-primary btn-sm custom-btn" %>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-/* Books grid columns only */
+
+/* HERO */
+.hero-section {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  border-radius: 12px;
+}
+
+/* HEADINGS */
+.section-heading {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* BUTTON */
+.custom-btn {
+  border-radius: 6px;
+}
+
+/* GRID FIX */
 .books-grid > [class*="col-"] {
   display: flex;
 }
 
+/* BOOK CARD */
 .book-card-home {
   display: flex;
   flex-direction: column;
   width: 100%;
-  transition: transform 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .book-card-home:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px) scale(1.02);
 }
 
+/* COVER */
 .book-cover-home {
-  flex-shrink: 0;
+  border-radius: 10px;
   overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  background: #f8f9fa;
   aspect-ratio: 2 / 3;
-  margin-bottom: 0.5rem;
+  background: var(--border);
+  box-shadow: 0 6px 12px var(--shadow);
+  transition: 0.25s;
+  margin-bottom: 0.75rem;
 }
 
 .book-cover-home:hover {
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 12px 20px var(--shadow);
 }
 
 .book-cover-home img {
@@ -124,43 +136,91 @@
   display: block;
 }
 
+/* INFO */
 .book-info-home {
-  flex: 1;
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
-  text-align: left;
 }
 
+/* TITLE */
 .book-title-home {
-  color: #212529;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  color: var(--text-main);
   line-height: 1.3;
-  min-height: 2.4rem;
+  min-height: 2.5rem;
 }
 
+/* AUTHOR */
 .book-author-home {
-  color: #6c757d;
   font-size: 0.8rem;
-  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
 }
 
-.badge-sm {
-  margin-top: auto;
-  align-self: flex-start;
+/* GENRE BADGE */
+.genre-badge {
+  background: var(--primary);
+  color: white;
   font-size: 0.7rem;
-  padding: 0.25rem 0.5rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  align-self: flex-start;
 }
 
+/* EXPLORE */
+.explore-section {
+  background: var(--bg-card);
+  box-shadow: 0 4px 12px var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.explore-card {
+  background: var(--bg-main);
+  border-radius: 10px;
+  padding: 20px;
+  transition: 0.2s;
+  height: 100%;
+  border: 1px solid var(--border);
+}
+
+.explore-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+}
+
+/* TEXT */
+.explore-card h5 {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.explore-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* BUTTON */
+.btn-primary {
+  background: var(--primary);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+/* RESPONSIVE */
 @media (max-width: 576px) {
   .book-title-home {
     font-size: 0.85rem;
-    min-height: 2.2rem;
   }
 
   .book-author-home {
     font-size: 0.75rem;
   }
 }
+
 </style>

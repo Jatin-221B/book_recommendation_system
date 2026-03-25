@@ -1,23 +1,24 @@
-<h4 class="fw-bold text-center mb-4">
-  Edit <%= resource_name.to_s.humanize %>
-</h4>
+<h4 class="fw-bold text-center mb-1">Account Settings</h4>
+<p class="text-center mb-4" style="font-size: 0.85rem; color: var(--text-secondary);">
+  Update your profile and password
+</p>
+
+<!-- Error Messages -->
+<% if resource.errors.any? %>
+  <div class="alert alert-danger" style="font-size: 0.85rem;">
+    <strong><%= pluralize(resource.errors.count, "error") %> prevented this update:</strong>
+    <ul class="mb-0 mt-2">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
 <%= form_for(resource,
              as: resource_name,
              url: registration_path(resource_name),
              html: { method: :put }) do |f| %>
-
-  <!-- Error Messages -->
-  <% if resource.errors.any? %>
-    <div class="alert alert-danger">
-      <strong><%= pluralize(resource.errors.count, "error") %> prevented this update:</strong>
-      <ul class="mb-0 mt-2">
-        <% resource.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
 
   <!-- Name -->
   <div class="mb-3">
@@ -25,7 +26,8 @@
     <%= f.text_field :name,
                      autofocus: true,
                      autocomplete: "name",
-                     class: "form-control" %>
+                     placeholder: "Your full name",
+                     class: "form-control auth-input" %>
   </div>
 
   <!-- Email -->
@@ -33,79 +35,154 @@
     <%= f.label :email, class: "form-label" %>
     <%= f.email_field :email,
                       autocomplete: "email",
-                      class: "form-control" %>
+                      placeholder: "you@example.com",
+                      class: "form-control auth-input" %>
   </div>
 
   <!-- Confirmable Notice -->
   <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div class="alert alert-warning">
-      Currently waiting confirmation for:
-      <strong><%= resource.unconfirmed_email %></strong>
+    <div class="alert alert-warning" style="font-size: 0.85rem;">
+      Awaiting confirmation for: <strong><%= resource.unconfirmed_email %></strong>
     </div>
   <% end %>
 
+  <hr style="border-color: var(--border); margin: 1.25rem 0;">
+
   <!-- New Password -->
   <div class="mb-3">
-    <%= f.label :password, class: "form-label" %>
-    <div class="form-text mb-1">
-      Leave blank if you don't want to change it.
-    </div>
-
+    <%= f.label :password, "New Password", class: "form-label" %>
+    <span class="ms-1" style="font-size: 0.75rem; color: var(--text-secondary);">
+      Leave blank to keep current
+      <% if @minimum_password_length %>
+        · <%= @minimum_password_length %> characters minimum
+      <% end %>
+    </span>
     <%= f.password_field :password,
                          autocomplete: "new-password",
-                         class: "form-control" %>
-
-    <% if @minimum_password_length %>
-      <div class="form-text">
-        <%= @minimum_password_length %> characters minimum
-      </div>
-    <% end %>
+                         placeholder: "New password",
+                         class: "form-control auth-input mt-1" %>
   </div>
 
   <!-- Password Confirmation -->
   <div class="mb-3">
-    <%= f.label :password_confirmation, class: "form-label" %>
+    <%= f.label :password_confirmation, "Confirm New Password", class: "form-label" %>
     <%= f.password_field :password_confirmation,
                          autocomplete: "new-password",
-                         class: "form-control" %>
+                         placeholder: "Confirm new password",
+                         class: "form-control auth-input" %>
   </div>
+
+  <hr style="border-color: var(--border); margin: 1.25rem 0;">
 
   <!-- Current Password -->
   <div class="mb-4">
     <%= f.label :current_password, class: "form-label" %>
-    <div class="form-text mb-1">
-      We need your current password to confirm changes.
-    </div>
+    <span class="ms-1" style="font-size: 0.75rem; color: var(--text-secondary);">
+      Required to save changes
+    </span>
     <%= f.password_field :current_password,
                          autocomplete: "current-password",
-                         class: "form-control" %>
+                         placeholder: "Your current password",
+                         class: "form-control auth-input mt-1" %>
   </div>
 
   <!-- Submit -->
-  <div class="d-grid mb-4">
-    <%= f.submit "Update",
-                 class: "btn btn-primary" %>
+  <div class="d-grid mb-3">
+    <%= f.submit "Save Changes", class: "btn btn-auth" %>
   </div>
 
 <% end %>
 
+<div class="text-center mb-4">
+  <%= link_to "← Back", request.referer || root_path, class: "auth-link" %>
+</div>
 
-<hr>
+<hr style="border-color: var(--border);">
 
-<!-- Cancel Account -->
-<h5 class="fw-bold text-danger mb-3">Cancel my account</h5>
-
-<div class="mb-4">
-  <%= button_to "Cancel my account",
+<!-- Danger Zone -->
+<div class="danger-zone">
+  <h6 class="danger-zone-title">Danger Zone</h6>
+  <p class="danger-zone-sub">Once you cancel your account, there is no going back.</p>
+  <%= button_to "Cancel My Account",
                 registration_path(resource_name),
                 method: :delete,
-                data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" },
+                data: { confirm: "Are you sure? This cannot be undone.", turbo_confirm: "Are you sure?" },
                 class: "btn btn-outline-danger btn-sm" %>
 </div>
 
-<!-- Back -->
-<div class="text-center">
-  <%= link_to "Back",
-              request.referer || root_path,
-              class: "text-decoration-none small text-muted" %>
-</div>
+<style>
+  .auth-input {
+    background: var(--bg-main) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .auth-input::placeholder {
+    color: var(--text-secondary) !important;
+  }
+
+  .auth-input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12) !important;
+    outline: none;
+  }
+
+  .btn-auth {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    width: 100%;
+    transition: background 0.2s;
+  }
+
+  .btn-auth:hover {
+    background: var(--primary-hover);
+    color: white;
+  }
+
+  .auth-link {
+    color: var(--primary);
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+
+  .auth-link:hover {
+    text-decoration: underline;
+    color: var(--primary-hover);
+  }
+
+  .form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
+  }
+
+  /* DANGER ZONE */
+  .danger-zone {
+    background: var(--bg-main);
+    border: 1px solid #ef444440;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .danger-zone-title {
+    font-weight: 600;
+    color: #ef4444;
+    margin-bottom: 0.25rem;
+  }
+
+  .danger-zone-sub {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+</style>
