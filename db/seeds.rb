@@ -20,8 +20,7 @@ ActiveRecord::Base.connection.reset_pk_sequence!('books') if ActiveRecord::Base.
 puts "✅ Cleared!"
 puts ""
 
-# Function to fetch books from Open Library by subject
-def fetch_books_by_subject(subject, limit = 12)
+def fetch_books_by_subject(subject, limit = 50)
   puts "  📡 Fetching from Open Library API..."
   url = URI("https://openlibrary.org/subjects/#{subject}.json?limit=#{limit}")
   response = Net::HTTP.get(url)
@@ -31,18 +30,13 @@ rescue => e
   { 'works' => [] }
 end
 
-# Function to get author bio from Open Library
 def get_author_bio(author_key)
   return "A celebrated author whose works have influenced readers worldwide." if author_key.nil?
-
   begin
     url = URI("https://openlibrary.org#{author_key}.json")
     response = Net::HTTP.get(url)
     data = JSON.parse(response)
-
-    # Bio can be a string or hash with 'value' key
     bio = data['bio']
-
     if bio.is_a?(Hash) && bio['value']
       bio['value']
     elsif bio.is_a?(String)
@@ -50,30 +44,32 @@ def get_author_bio(author_key)
     else
       "A celebrated author whose works have influenced readers worldwide."
     end
-  rescue => e
+  rescue
     "A celebrated author whose works have influenced readers worldwide."
   end
 end
 
-# Function to get cover image URL
 def get_cover_url(cover_id)
   return nil if cover_id.nil?
   "https://covers.openlibrary.org/b/id/#{cover_id}-L.jpg"
 end
 
-# Categories to fetch real books from
+# 10 subjects x ~50 books each = ~500 books
+# Open Library max per request is 50
 subjects = {
-  'fantasy' => 'Fantasy',
-  'science_fiction' => 'Science Fiction',
-  'mystery' => 'Mystery',
-  'romance' => 'Romance',
-  'thriller' => 'Thriller',
-  'horror' => 'Horror',
-  'classic' => 'Classic',
-  'adventure' => 'Adventure'
+  'fantasy'          => 'Fantasy',
+  'science_fiction'  => 'Science Fiction',
+  'mystery'          => 'Mystery',
+  'romance'          => 'Romance',
+  'thriller'         => 'Thriller',
+  'horror'           => 'Horror',
+  'classic'          => 'Classic',
+  'adventure'        => 'Adventure',
+  'biography'        => 'Biography',
+  'history'          => 'History'
 }
 
-authors_cache = {}  # Cache to avoid duplicate authors
+authors_cache = {}
 
 puts "📚 Fetching REAL books with covers from Open Library..."
 puts "-" * 50
@@ -81,56 +77,44 @@ puts "-" * 50
 subjects.each do |subject_key, genre_name|
   puts "\n📖 Fetching #{genre_name} books..."
 
-  data = fetch_books_by_subject(subject_key, 12)
+  data = fetch_books_by_subject(subject_key, 50)
   works = data['works'] || []
 
   created_count = 0
 
   works.each do |work|
-    # Extract book information
-    title = work['title']
+    title      = work['title']
     author_name = work['authors']&.first&.dig('name')
-    author_key = work['authors']&.first&.dig('key')
-    cover_id = work['cover_id']  # This is the cover ID
+    author_key  = work['authors']&.first&.dig('key')
+    cover_id    = work['cover_id']
 
-    # Skip if missing essential data
     next if title.nil? || author_name.nil?
-
-    # Skip if title is too long
     next if title.length > 200
 
     begin
-      # Find or create author
       author = authors_cache[author_name]
 
       unless author
         puts "  👤 Creating author: #{author_name}"
-
-        # Fetch real bio from Open Library
         bio = get_author_bio(author_key)
-
-        author = Author.create!(
-          name: author_name,
-          bio: bio
-        )
-
+        author = Author.create!(name: author_name, bio: bio)
         authors_cache[author_name] = author
-
-        # Be nice to the API
         sleep(0.3)
       end
 
-      # Create book with real description and cover
       description = if work['first_sentence']
-                     work['first_sentence'].join(' ')
+        work['first_sentence'].is_a?(Array) ? work['first_sentence'].join(' ') : work['first_sentence'].to_s
       else
-                     "A captivating #{genre_name} work that has engaged readers for generations."
+        "A captivating #{genre_name} work that has engaged readers for generations."
       end
 
-      # Truncate description if too long
       description = description[0..1000] if description.length > 1000
 
-      # Get cover URL
+      # Ensure minimum length for validation
+      if description.length < 20
+        description = "A captivating #{genre_name} work that has engaged readers for generations."
+      end
+
       cover_url = get_cover_url(cover_id)
 
       book = Book.create!(
@@ -143,15 +127,13 @@ subjects.each do |subject_key, genre_name|
 
       puts "    ✓ #{book.title}#{cover_url ? ' 🖼️' : ''}"
       created_count += 1
-
-      # Be nice to the API
       sleep(0.2)
 
     rescue ActiveRecord::RecordInvalid => e
-      puts "    ⚠️  Skipped (validation error): #{title}"
+      puts "    ⚠️  Skipped (#{e.message}): #{title}"
       next
     rescue => e
-      puts "    ⚠️  Error: #{e.message}"
+      puts "    ⚠️  Error (#{e.message}): #{title}"
       next
     end
   end
