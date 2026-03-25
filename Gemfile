@@ -74,3 +74,5 @@ gem "shakapacker", "~> 9.5"
 gem "kaminari", "~> 1.2"
 
 gem "pundit", "~> 2.5"
+
+gem "sprockets-rails", "~> 3.5"

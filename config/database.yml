@@ -14,6 +14,10 @@ test:
   <<: *default
   database: book_rec_system_test
 
+production:
+  adapter: postgresql
+  encoding: unicode
+  url: <%= ENV['DATABASE_URL'] %>
 # production:
 #   <<: *default
 #   database: book_rec_system_production
