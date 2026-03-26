@@ -301,19 +301,41 @@
 
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("turbo:load", () => {
   document.querySelectorAll(".star-rating-input").forEach(container => {
     const reviewId = container.dataset.reviewId;
     const stars = container.querySelectorAll(".star");
     const input = document.getElementById(`rating-input-${reviewId}`);
 
-    stars.forEach(star => {
+    if (!input) return;
+
+    // ✅ Initialize stars based on existing value
+    const initialValue = parseInt(input.value) || 0;
+    stars.forEach((s, i) => {
+      s.textContent = i < initialValue ? "★" : "☆";
+    });
+
+    stars.forEach((star, index) => {
       star.addEventListener("click", () => {
-        const value = star.dataset.value;
+        const value = index + 1;
         input.value = value;
 
-        stars.forEach(s => {
-          s.textContent = s.dataset.value <= value ? "★" : "☆";
+        stars.forEach((s, i) => {
+          s.textContent = i < value ? "★" : "☆";
+        });
+      });
+
+      // 🔥 Optional hover effect (like your main form)
+      star.addEventListener("mouseover", () => {
+        stars.forEach((s, i) => {
+          s.textContent = i <= index ? "★" : "☆";
+        });
+      });
+
+      star.addEventListener("mouseleave", () => {
+        const val = parseInt(input.value) || 0;
+        stars.forEach((s, i) => {
+          s.textContent = i < val ? "★" : "☆";
         });
       });
     });
