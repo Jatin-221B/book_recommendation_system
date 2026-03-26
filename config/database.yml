@@ -5,8 +5,8 @@ default: &default
 
 development:
   <<: *default
-  username: jatin
-  password: jb_selldo
+  username: <%= ENV.fetch("username", "username") %>
+  password: <%= ENV.fetch("password", "password") %>
   host: localhost
   database: book_rec_system_development
 

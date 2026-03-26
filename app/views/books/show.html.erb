@@ -227,23 +227,39 @@
                             method: :patch,
                             local: true do |f| %>
 
-                <div class="mb-2">
-                  <%= f.select :rating, 1..5, {}, class: "form-select form-select-sm" %>
+                <!-- INLINE STAR + TEXT -->
+                <div class="d-flex align-items-start gap-3 flex-wrap">
+
+                  <!-- STAR RATING -->
+                  <div class="star-rating-input mt-1" data-review-id="<%= review.id %>">
+                    <% (1..5).each do |i| %>
+                      <span class="star <%= 'selected' if review.rating >= i %>"
+                            data-value="<%= i %>">☆</span>
+                    <% end %>
+                  </div>
+
+                  <!-- TEXT AREA -->
+                  <div class="flex-grow-1">
+                    <%= f.text_area :content,
+                                    rows: 3,
+                                    class: "form-control review-textarea",
+                                    placeholder: "Update your review..." %>
+                  </div>
+
                 </div>
 
-                <div class="mb-2">
-                  <%= f.text_area :content,
-                                  rows: 3,
-                                  class: "form-control form-control-sm" %>
-                </div>
+                <!-- HIDDEN RATING -->
+                <%= f.hidden_field :rating,
+                                  value: review.rating,
+                                  id: "rating-input-#{review.id}" %>
 
-                <div class="d-flex gap-2">
+                <!-- BUTTONS -->
+                <div class="d-flex gap-2 mt-3">
                   <%= f.submit "Update", class: "btn btn-primary btn-sm" %>
 
                   <button type="button"
                           class="btn btn-outline-secondary btn-sm"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#editReview<%= review.id %>">
+                          onclick="bootstrap.Collapse.getOrCreateInstance(document.getElementById('editReview<%= review.id %>')).hide()">
                     Cancel
                   </button>
                 </div>
@@ -284,6 +300,26 @@
 <% end %>
 
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".star-rating-input").forEach(container => {
+    const reviewId = container.dataset.reviewId;
+    const stars = container.querySelectorAll(".star");
+    const input = document.getElementById(`rating-input-${reviewId}`);
+
+    stars.forEach(star => {
+      star.addEventListener("click", () => {
+        const value = star.dataset.value;
+        input.value = value;
+
+        stars.forEach(s => {
+          s.textContent = s.dataset.value <= value ? "★" : "☆";
+        });
+      });
+    });
+  });
+});
+</script>
 <style>
 
 

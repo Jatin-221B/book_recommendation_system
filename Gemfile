@@ -76,3 +76,5 @@ gem "kaminari", "~> 1.2"
 gem "pundit", "~> 2.5"
 
 gem "sprockets-rails", "~> 3.5"
+
+gem "dotenv-rails", "~> 3.2"
