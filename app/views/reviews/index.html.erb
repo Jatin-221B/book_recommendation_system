@@ -58,10 +58,10 @@
 
     <% else %>
       <div class="empty-state">
-        <div class="empty-icon">💬</div>
+        <div class="empty-icon"></div>
         <h3 class="empty-title">No reviews yet</h3>
         <p class="empty-sub">Be the first to review this book</p>
-        <%= link_to "← Back to Book", book_path(@book), class: "btn reviews-btn-primary btn-sm mt-2" %>
+        <%= link_to "Back to Book", book_path(@book), class: "btn reviews-btn-primary btn-sm mt-2" %>
       </div>
     <% end %>
 
